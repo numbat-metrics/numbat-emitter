@@ -1,0 +1,34 @@
+{
+  "name": "numbat-emitter",
+  "version": "0.0.0",
+  "description": "numbat-powered metrics emitter",
+  "main": "index.js",
+  "scripts": {
+    "test": "lab -v -c 70 test/test*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ceejbot/numbat-emitter.git"
+  },
+  "keywords": [
+    "numbat",
+    "metrics",
+    "influxdb",
+    "riemann",
+    "monitoring"
+  ],
+  "author": "C J Silverio <ceejceej@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ceejbot/numbat-emitter/issues"
+  },
+  "homepage": "https://github.com/ceejbot/numbat-emitter",
+  "devDependencies": {
+    "jshint": "^2.5.1",
+    "lab": "^3.1.1",
+    "must": "^0.11.0"
+  },
+  "dependencies": {
+    "lodash": "^2.4.1"
+  }
+}
