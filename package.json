@@ -7,7 +7,8 @@
     "url": "https://github.com/ceejbot/numbat-emitter/issues"
   },
   "dependencies": {
-    "lodash": "^2.4.1"
+    "lodash": "^2.4.1",
+    "objectstream": "0.0.4"
   },
   "devDependencies": {
     "jshint": "^2.5.1",
@@ -29,6 +30,7 @@
     "url": "git://github.com/ceejbot/numbat-emitter.git"
   },
   "scripts": {
-    "test": "lab -v -c 70 test.js"
+    "test": "npm run check-hint && lab -v -c -t 70 test.js",
+    "check-hint": "jshint *.js"
   }
 }
