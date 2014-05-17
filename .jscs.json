@@ -1,0 +1,71 @@
+{
+	"requireCurlyBraces": [ "try", "catch" ],
+	"requireSpaceAfterKeywords":
+	[
+	    "if",
+	    "else",
+	    "for",
+	    "while",
+	    "do",
+	    "switch",
+	    "return",
+	    "try",
+	    "catch"
+	],
+	"disallowSpacesInFunctionExpression":
+	{
+	    "beforeOpeningRoundBrace": true
+	},
+	"disallowQuotedKeysInObjects": "allButReserved",
+	"requireOperatorBeforeLineBreak":
+	[
+	    "?",
+	    "+",
+	    "-",
+	    "/",
+	    "*",
+	    "=",
+	    "==",
+	    "===",
+	    "!=",
+	    "!==",
+	    ">",
+	    ">=",
+	    "<",
+	    "<="
+	],
+	"disallowSpaceAfterPrefixUnaryOperators":   ["++", "--", "+", "-", "~", "!"],
+	"disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+	"requireSpaceBeforeBinaryOperators":
+	[
+	    "+",
+	    "-",
+	    "/",
+	    "*",
+	    "=",
+	    "==",
+	    "===",
+	    "!=",
+	    "!=="
+	],
+	"requireSpaceAfterBinaryOperators":
+	[
+	    "+",
+	    "-",
+	    "/",
+	    "*",
+	    "=",
+	    "==",
+	    "===",
+	    "!=",
+	    "!=="
+	],
+	"validateLineBreaks":         "LF",
+	"validateIndentation":        4,
+	"disallowMixedSpacesAndTabs": "smart",
+	"disallowTrailingWhitespace": true,
+	"requireKeywordsOnNewLine":   ["else"],
+	"requireLineFeedAtFileEnd":   true,
+	"safeContextKeyword":         "self",
+	"requireDotNotation":         true
+}
