@@ -1,15 +1,20 @@
 {
   "name": "numbat-emitter",
-  "version": "0.0.0",
   "description": "numbat-powered metrics emitter",
-  "main": "index.js",
-  "scripts": {
-    "test": "lab -v -c 70 test/test*.js"
+  "version": "0.0.0",
+  "author": "C J Silverio <ceejceej@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/ceejbot/numbat-emitter/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/ceejbot/numbat-emitter.git"
+  "dependencies": {
+    "lodash": "^2.4.1"
   },
+  "devDependencies": {
+    "jshint": "^2.5.1",
+    "lab": "^3.1.1",
+    "must": "^0.11.0"
+  },
+  "homepage": "https://github.com/ceejbot/numbat-emitter",
   "keywords": [
     "numbat",
     "metrics",
@@ -17,18 +22,13 @@
     "riemann",
     "monitoring"
   ],
-  "author": "C J Silverio <ceejceej@gmail.com>",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ceejbot/numbat-emitter/issues"
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ceejbot/numbat-emitter.git"
   },
-  "homepage": "https://github.com/ceejbot/numbat-emitter",
-  "devDependencies": {
-    "jshint": "^2.5.1",
-    "lab": "^3.1.1",
-    "must": "^0.11.0"
-  },
-  "dependencies": {
-    "lodash": "^2.4.1"
+  "scripts": {
+    "test": "lab -v -c 70 test.js"
   }
 }
