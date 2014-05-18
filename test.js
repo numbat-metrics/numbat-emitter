@@ -1,13 +1,13 @@
 'use strict';
 
 var
-    lab       = require('lab'),
-    describe  = lab.describe,
-    it        = lab.it,
-    demand    = require('must'),
-    net       = require('net'),
-    Emitter   = require('./index'),
-    ObjStream = require('objectstream')
+    lab        = require('lab'),
+    describe   = lab.describe,
+    it         = lab.it,
+    demand     = require('must'),
+    net        = require('net'),
+    Emitter    = require('./index'),
+    JSONStream = require('json-stream')
     ;
 
 describe('numbat-emitter', function()
@@ -25,7 +25,8 @@ describe('numbat-emitter', function()
     {
         function onConnection(socket)
         {
-            var instream = ObjStream.createDeserializeStream(socket);
+            var instream = new JSONStream();
+            socket.pipe(instream);
             instream.on('data', function(data)
             {
                 mockServer.emit('received', data);

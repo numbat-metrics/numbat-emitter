@@ -1,10 +1,10 @@
 var
-    _           = require('lodash'),
-    assert      = require('assert'),
-    events      = require('events'),
-    net         = require('net'),
-    ObjStream   = require('objectstream'),
-    util        = require('util')
+    _      = require('lodash'),
+    assert = require('assert'),
+    events = require('events'),
+    net    = require('net'),
+    stream = require('stream'),
+    util   = require('util')
     ;
 
 var Emitter = module.exports = function Emitter(opts)
@@ -21,6 +21,8 @@ var Emitter = module.exports = function Emitter(opts)
     this.defaults.host = opts.node;
     this.defaults.tags = opts.tags; // optional
     this.backlog = [];
+    this.output = new JSONOutputStream();
+
 
     this.connect();
 };
@@ -38,12 +40,12 @@ Emitter.prototype.connect = function connect()
     if (this.client)
     {
         this.client.removeAllListeners();
-        this.output = null;
+        this.output.unpipe();
         this.client = null;
     }
 
     this.client = net.connect(this.options.port, this.options.host);
-    this.output = ObjStream.createSerializeStream(this.client);
+    this.output.pipe(this.client);
     this.client.on('connect', this.onConnect.bind(this));
     this.client.on('error', this.onError.bind(this));
     this.client.on('close', this.onClose.bind(this));
@@ -52,6 +54,7 @@ Emitter.prototype.connect = function connect()
 Emitter.prototype.destroy = function destroy()
 {
     if (!this.client) return;
+    this.output.unpipe();
     this.client.removeAllListeners();
     this.client.end();
     this.client = null;
@@ -60,7 +63,7 @@ Emitter.prototype.destroy = function destroy()
 Emitter.prototype.onConnect = function onConnect()
 {
     while (this.backlog.length)
-        this.output.write(this.backlog.shift());
+        this._write(this.backlog.shift());
     this.ready = true;
     this.emit('ready');
 };
@@ -91,16 +94,31 @@ Emitter.prototype.makeEvent = function makeEvent(opts)
     return event;
 };
 
+Emitter.prototype._write = function _write(event)
+{
+    this.output.write(JSON.stringify(event) + '\n');
+};
+
 Emitter.prototype.metric = function metric(opts)
 {
     var event = this.makeEvent(opts);
     if (this.ready)
-        this.output.write(event);
+        this._write(event);
     else
         this.backlog.push(event);
 };
 
-Emitter.createClient = function createClient(opts)
+
+function JSONOutputStream()
 {
-    return new Emitter(opts);
+    stream.Transform.call(this);
+    this._readableState.objectMode = false;
+    this._writableState.objectMode = true;
+}
+util.inherits(JSONOutputStream, stream.Transform);
+
+JSONOutputStream.prototype._transform = function _transformOut(object, encoding, callback)
+{
+    this.push(object);
+    callback();
 };

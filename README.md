@@ -16,9 +16,9 @@ var emitter = Emitter.createClient({
     port: 8000,
     node: 'www-1'
 });
-emitter.send({ service: 'httpd.latency', metric: 30 });
-emitter.send({ service: 'disk.used.percent', metric: 36 });
-emitter.send({ service: 'heartbeat'});
+emitter.metric({ service: 'httpd.latency', metric: 30 });
+emitter.metric({ service: 'disk.used.percent', metric: 36 });
+emitter.metric({ service: 'heartbeat'});
 ```
 
 ## License
