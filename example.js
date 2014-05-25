@@ -8,12 +8,23 @@ var emitter = new Emitter({
     node: 'test-1'
 });
 
-emitter.metric({ service: 'httpd.latency', metric:  Math.round(Math.random() * 1000) });
-emitter.metric({ service: 'disk.used.percent', metric: Math.random() * 100 });
-emitter.metric({ service: 'heartbeat'});
+emitter.metric({ service: 'example.start', pid: process.pid });
 
-setTimeout(function()
+
+function heartbeat()
 {
-    emitter.destroy();
-    process.exit(0);
-}, 1000);
+    emitter.metric({ service: 'heartbeat'});
+}
+
+function resources()
+{
+    var mem = process.memoryUsage();
+
+    emitter.metric({ service: 'example.memory.rss', metric: mem.rss });
+    emitter.metric({ service: 'example.memory.heapTotal', metric: mem.heapTotal });
+    emitter.metric({ service: 'example.memory.heapUsed', metric: mem.heapUsed });
+}
+
+
+var heartbeatTimer = setInterval(heartbeat, 60000);
+var resourcesTimer = setInterval(resources, 120000);
