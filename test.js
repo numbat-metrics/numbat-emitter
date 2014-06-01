@@ -161,15 +161,15 @@ describe('numbat-emitter', function()
     {
         var emitter = new Emitter(mockOpts);
         function shouldThrow() { emitter.metric(); }
-        shouldThrow.must.throw(/emit something/);
+        shouldThrow.must.throw(/empty event/);
         done();
     });
 
-    it('requires a `service` field for all metrics', function(done)
+    it('requires a `name` field for all metrics', function(done)
     {
         var emitter = new Emitter(mockOpts);
         function shouldThrow() { emitter.metric({ foo: 'bar' }); }
-        shouldThrow.must.throw(/service/);
+        shouldThrow.must.throw(/name/);
         done();
     });
 
@@ -187,7 +187,7 @@ describe('numbat-emitter', function()
 
         mockServer.on('received', observer);
         var emitter = new Emitter(mockOpts);
-        emitter.metric({ service: 'test', metric: 4 });
+        emitter.metric({ name: 'test', metric: 4 });
     });
 
     it('accumulates events in a backlog until connected', { timeout: 5000}, function(done)
@@ -196,13 +196,13 @@ describe('numbat-emitter', function()
 
         emitter.on('close', function()
         {
-            emitter.metric({ service: 'test.splort', metric: 4 });
-            emitter.metric({ service: 'test.latency', metric: 30 });
+            emitter.metric({ name: 'test.splort', metric: 4 });
+            emitter.metric({ name: 'test.latency', metric: 30 });
 
             emitter.backlog.must.be.an.array();
             emitter.backlog.length.must.equal(2);
-            emitter.backlog[0].must.have.property('service');
-            emitter.backlog[0].service.must.equal('test.splort');
+            emitter.backlog[0].must.have.property('name');
+            emitter.backlog[0].name.must.equal('test.splort');
 
             done();
         });
@@ -218,11 +218,11 @@ describe('numbat-emitter', function()
         {
             count++;
             if (count === 1)
-                d.service.must.equal('test.splort');
+                d.name.must.equal('test.splort');
 
             if (count === 2)
             {
-                d.service.must.equal('test.latency');
+                d.name.must.equal('test.latency');
                 mockServer.removeListener('received', observer);
                 done();
             }
@@ -234,8 +234,8 @@ describe('numbat-emitter', function()
         function fillBacklog()
         {
             emitter.removeListener('close', fillBacklog);
-            emitter.metric({ service: 'test.splort', metric: 4 });
-            emitter.metric({ service: 'test.latency', metric: 30 });
+            emitter.metric({ name: 'test.splort', metric: 4 });
+            emitter.metric({ name: 'test.latency', metric: 30 });
         }
 
         emitter.on('close', fillBacklog);
