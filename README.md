@@ -27,16 +27,59 @@ Valid events look like this:
 
 ```javascript
 {
-    host: 'hostname.example.com',
     name: 'name.of.metric',
+    time: ts-in-ms,
+    value: 42
+    host: 'hostname.example.com',
     tags: ['array', 'of', 'tags'],
     status: 'okay' | 'warning' | 'critical' | 'unknown',
     description: 'textual description',
-    time: ts-in-ms,
     ttl: ms-to-live,
-    value: 42
 }
 ```
+
+You can add any fields you like & they will be persisted in InfluxDB. However, only the fields listed above are meaninful to the analyzer. Those fields are described in detail below.
+
+### name
+
+String. Required. Name of this event or metric. Use dots `.` to separate namespaces.
+
+### time
+
+Number. Required. Timestamp in milliseconds since the epoch.
+
+### value
+
+Number. The value of this metric, if appropriate.
+
+### host
+
+String. The hostname of the service generating this event, if relevant.
+
+### tags
+
+Array of strings. Use tags to hint to the analyzer/dashboard how to display this metric. Understood metric types include:
+
+- `annotation`:
+- `counter`
+- `gauge`
+- `histogram`
+
+### status
+
+String. One of `okay`, `warning`, `critical`, or `unknown`. Use this to trigger alerts if this event represents a known-bad condition.
+
+### description
+
+Textual description of the event. Max 255 bytes.
+
+### ttl
+
+Number. Milliseconds that this event is considered valid. The analyzer will expire the event after `event.time` + `event.ttl`.
+
+## Contributing
+
+Sure! Write tests with [Lab](https://www.npmjs.org/package/lab) & [must](https://www.npmjs.org/package/must). Use BSD/Allman bracing or I will stare at you funny and not take your pull request.
 
 ## License
 
