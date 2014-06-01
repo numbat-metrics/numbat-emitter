@@ -82,13 +82,13 @@ Emitter.prototype.onClose = function onClose()
     this.connect();
 };
 
-Emitter.prototype.makeEvent = function makeEvent(opts)
+Emitter.prototype.makeEvent = function makeEvent(attrs)
 {
-    assert(opts && _.isObject(opts), 'you must emit something');
-    assert(opts.service && _.isString(opts.service), 'you must pass a `service` to emit()');
+    assert(attrs && _.isObject(attrs), 'you cannot make an empty event');
+    assert(attrs.name, 'you must give your metric a name');
 
     var event = {};
-    _.defaults(event, opts, this.defaults);
+    _.defaults(event, attrs, this.defaults);
     if (!event.time) event.time = Date.now(); // milliseconds!
 
     return event;

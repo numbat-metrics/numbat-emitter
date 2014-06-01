@@ -16,9 +16,26 @@ var emitter = Emitter.createClient({
     port: 8000,
     node: 'www-1'
 });
-emitter.metric({ service: 'httpd.latency', metric: 30 });
-emitter.metric({ service: 'disk.used.percent', metric: 36 });
-emitter.metric({ service: 'heartbeat'});
+emitter.metric({ name: 'httpd.latency', metric: 30 });
+emitter.metric({ name: 'disk.used.percent', metric: 36 });
+emitter.metric({ name: 'heartbeat'});
+```
+
+## Events
+
+Valid events look like this:
+
+```javascript
+{
+    host: 'hostname.example.com',
+    name: 'name.of.metric',
+    tags: ['array', 'of', 'tags'],
+    status: 'okay' | 'warning' | 'critical' | 'unknown',
+    description: 'textual description',
+    time: ts-in-ms,
+    ttl: ms-to-live,
+    value: 42
+}
 ```
 
 ## License
