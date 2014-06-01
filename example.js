@@ -5,7 +5,7 @@ var Emitter = require('./index');
 var emitter = new Emitter({
     host: 'localhost',
     port: 3335,
-    node: 'test-1'
+    node: 'example-1'
 });
 
 emitter.metric({ name: 'example.start', pid: process.pid });
@@ -13,7 +13,7 @@ emitter.metric({ name: 'example.start', pid: process.pid });
 
 function heartbeat()
 {
-    emitter.metric({ name: 'heartbeat'});
+    emitter.metric({ name: 'heartbeat', ttl: 16000 });
 }
 
 function resources()
@@ -25,5 +25,5 @@ function resources()
     emitter.metric({ name: 'example.memory.heapUsed', metric: mem.heapUsed });
 }
 
-var heartbeatTimer = setInterval(heartbeat, 60000);
-var resourcesTimer = setInterval(resources, 120000);
+var heartbeatTimer = setInterval(heartbeat, 15000);
+var resourcesTimer = setInterval(resources, 30000);

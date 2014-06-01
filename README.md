@@ -60,7 +60,7 @@ String. The hostname of the service generating this event, if relevant.
 
 Array of strings. Use tags to hint to the analyzer/dashboard how to display this metric. Understood metric types include:
 
-- `annotation`:
+- `annotation`
 - `counter`
 - `gauge`
 - `histogram`
