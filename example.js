@@ -3,8 +3,7 @@
 var Emitter = require('./index');
 
 var emitter = new Emitter({
-    host: 'localhost',
-    port: 3335,
+    path: '/tmp/numbat.sock',
     node: 'example-1'
 });
 
@@ -27,3 +26,12 @@ function resources()
 
 var heartbeatTimer = setInterval(heartbeat, 15000);
 var resourcesTimer = setInterval(resources, 30000);
+
+process.on('SIGINT', function()
+{
+    console.log('Shutting down gracefully.');
+    clearInterval(heartbeatTimer);
+    clearInterval(resourcesTimer);
+    emitter.metric({ name: 'shutdown' });
+    setTimeout(process.exit, 500);
+});

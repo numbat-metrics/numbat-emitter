@@ -10,8 +10,7 @@ var
 var Emitter = module.exports = function Emitter(opts)
 {
     assert(opts && _.isObject(opts), 'you must pass an options object to the Emitter constructor');
-    assert(opts.host && _.isString(opts.host), 'you must pass a `host` option');
-    assert(opts.port && _.isNumber(opts.port), 'you must pass a `port` option');
+    assert((opts.host && opts.port) || opts.path, 'you must pass either a path option or a host/port pair');
     assert(opts.node && _.isString(opts.node), 'you must pass a `node` option naming this host');
 
     events.EventEmitter.call(this);
@@ -22,7 +21,6 @@ var Emitter = module.exports = function Emitter(opts)
     this.defaults.tags = opts.tags; // optional
     this.backlog = [];
     this.output = new JSONOutputStream();
-
 
     this.connect();
 };
@@ -44,7 +42,7 @@ Emitter.prototype.connect = function connect()
         this.client = null;
     }
 
-    this.client = net.connect(this.options.port, this.options.host);
+    this.client = net.connect(this.options);
     this.output.pipe(this.client);
     this.client.on('connect', this.onConnect.bind(this));
     this.client.on('error', this.onError.bind(this));

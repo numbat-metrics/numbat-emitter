@@ -47,17 +47,17 @@ describe('numbat-emitter', function()
         done();
     });
 
-    it('requires a host option', function(done)
+    it('requires a host & port option', function(done)
     {
         function shouldThrow() { return new Emitter({}); }
         shouldThrow.must.throw(/host/);
         done();
     });
 
-    it('requires a port option', function(done)
+    it('requires a path option otherwise', function(done)
     {
-        function shouldThrow() { return new Emitter({ host: 'localhost' }); }
-        shouldThrow.must.throw(/port/);
+        function shouldThrow() { return new Emitter({ path: '/tmp/numbat.sock' }); }
+        shouldThrow.must.throw(/node/);
         done();
     });
 
