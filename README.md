@@ -4,7 +4,8 @@
 
 [![Tests](http://img.shields.io/travis/ceejbot/numbat-emitter.svg?style=flat)](http://travis-ci.org/ceejbot/numbat-emitter)
 ![Coverage](http://img.shields.io/badge/coverage-98%25-green.svg?style=flat)
-[![Dependencies](https://david-dm.org/ceejbot/numbat-emitter.png)](https://david-dm.org/ceejbot/numbat-emitter)
+[![Dependencies](https://david-dm.org/ceejbot/numbat-emitter.png)](https://david-dm.org/ceejbot/numbat-emitter)  
+[![NPM](https://nodei.co/npm/numbat-emitter.png)](https://nodei.co/npm/numbat-emitter/)
 
 ## Usage
 
