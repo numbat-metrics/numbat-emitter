@@ -3,7 +3,7 @@
 [Numbat](http://www.arkive.org/numbat/myrmecobius-fasciatus/)-powered metrics emitter. See [numbat-collector](https://github.com/ceejbot/numbat-collector) for the matching metrics collector.
 
 [![Tests](http://img.shields.io/travis/ceejbot/numbat-emitter.svg?style=flat)](http://travis-ci.org/ceejbot/numbat-emitter)
-![Coverage](http://img.shields.io/badge/coverage-92%25-green.svg?style=flat)
+![Coverage](http://img.shields.io/badge/coverage-98%25-green.svg?style=flat)
 [![Dependencies](https://david-dm.org/ceejbot/numbat-emitter.png)](https://david-dm.org/ceejbot/numbat-emitter)
 
 ## Usage
@@ -39,6 +39,8 @@ Valid events look like this:
 ```
 
 You can add any fields you like & they will be persisted in InfluxDB. However, only the fields listed above are meaninful to the analyzer. Those fields are described in detail below.
+
+NOTE: You can of course emit any events you like! The style of events required/expected by numbat's [analyzer](https://github.com/ceejbot/numbat-analyzer), however, might change in development.
 
 ### name
 
@@ -76,6 +78,27 @@ Textual description of the event. Max 255 bytes.
 ### ttl
 
 Number. Milliseconds that this event is considered valid. The analyzer will expire the event after `event.time` + `event.ttl`.
+
+## Practical event examples
+
+See also the example emitter in [example.js](./example.js).
+
+```javascript
+var e1 = {
+    name: 'request.latency',
+    value: 42
+    tags: ['app', 'histogram' ],
+    status: 'okay',
+};
+var e2 = {
+    name: 'request.latency',
+    value: 5023
+    tags: ['app', 'histogram' ],
+    status: 'warning',
+};
+
+var e3 = { name: 'heartbeat', ttl: 30000 };
+```
 
 ## Contributing
 

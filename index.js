@@ -106,7 +106,6 @@ Emitter.prototype.metric = function metric(opts)
         this.backlog.push(event);
 };
 
-
 function JSONOutputStream()
 {
     stream.Transform.call(this);

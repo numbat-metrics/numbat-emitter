@@ -49,7 +49,7 @@ describe('numbat-emitter', function()
 
     it('requires a host & port option', function(done)
     {
-        function shouldThrow() { return new Emitter({}); }
+        function shouldThrow() { return new Emitter({ host: 'example.com' }); }
         shouldThrow.must.throw(/host/);
         done();
     });
@@ -115,7 +115,6 @@ describe('numbat-emitter', function()
         emitter.client.on('connect', function()
         {
             emitter.destroy();
-            emitter.destroy();
             done();
         });
     });
@@ -140,7 +139,7 @@ describe('numbat-emitter', function()
         done();
     });
 
-    it('reconnects on close & error', function(done)
+    it('reconnects on close', function(done)
     {
         var count = 0;
         var emitter = new Emitter(mockOpts);
@@ -155,6 +154,28 @@ describe('numbat-emitter', function()
         });
 
         emitter.client.end();
+    });
+
+    it('reconnects on error', function(done)
+    {
+        var count = 0;
+        var emitter = new Emitter(mockOpts);
+        emitter.on('ready', function()
+        {
+            count++;
+            switch (count)
+            {
+            case 1:
+                emitter.client.emit('error', new Error('whee!'));
+                break;
+            case 2:
+                emitter.destroy();
+                done();
+                break;
+            }
+        });
+
+        emitter.connect();
     });
 
     it('requires that an object be passed to metric()', function(done)
@@ -180,14 +201,14 @@ describe('numbat-emitter', function()
             d.must.be.an.object();
             d.must.have.property('host');
             d.must.have.property('time');
-            d.metric.must.equal(4);
+            d.value.must.equal(4);
             mockServer.removeListener('received', observer);
             done();
         }
 
         mockServer.on('received', observer);
         var emitter = new Emitter(mockOpts);
-        emitter.metric({ name: 'test', metric: 4 });
+        emitter.metric({ name: 'test', value: 4 });
     });
 
     it('accumulates events in a backlog until connected', { timeout: 5000}, function(done)
@@ -196,8 +217,8 @@ describe('numbat-emitter', function()
 
         emitter.on('close', function()
         {
-            emitter.metric({ name: 'test.splort', metric: 4 });
-            emitter.metric({ name: 'test.latency', metric: 30 });
+            emitter.metric({ name: 'test.splort', value: 4 });
+            emitter.metric({ name: 'test.latency', value: 30 });
 
             emitter.backlog.must.be.an.array();
             emitter.backlog.length.must.equal(2);
@@ -234,14 +255,51 @@ describe('numbat-emitter', function()
         function fillBacklog()
         {
             emitter.removeListener('close', fillBacklog);
-            emitter.metric({ name: 'test.splort', metric: 4 });
-            emitter.metric({ name: 'test.latency', metric: 30 });
+            emitter.metric({ name: 'test.splort', value: 4 });
+            emitter.metric({ name: 'test.latency', value: 30 });
         }
 
         emitter.on('close', fillBacklog);
         var orig = emitter.connect.bind(emitter);
         emitter.connect = function() { setTimeout(orig, 1000); };
         emitter.client.end();
+    });
+
+    it('sends normally when connected', function(done)
+    {
+        var emitter = new Emitter(mockOpts);
+        emitter.on('ready', function()
+        {
+            emitter.metric({ name: 'test.splort', value: 4 });
+            emitter.metric({ name: 'test.latency', value: 30 });
+        });
+
+        var count = 0;
+        function observer(d)
+        {
+            count++;
+            switch (count)
+            {
+            case 1:
+                d.name.must.equal('test.splort');
+                break;
+            case 2:
+                d.name.must.equal('test.latency');
+                mockServer.removeListener('received', observer);
+                done();
+                break;
+            }
+        }
+        mockServer.on('received', observer);
+
+        emitter.connect();
+    });
+
+    it('destroy can be safely called before connect', function(done)
+    {
+        var emitter = new Emitter(mockOpts);
+        emitter.destroy();
+        done();
     });
 
     lab.after(function(done)
