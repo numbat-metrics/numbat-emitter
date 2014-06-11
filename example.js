@@ -19,9 +19,9 @@ function resources()
 {
     var mem = process.memoryUsage();
 
-    emitter.metric({ name: 'example.memory.rss', metric: mem.rss });
-    emitter.metric({ name: 'example.memory.heapTotal', metric: mem.heapTotal });
-    emitter.metric({ name: 'example.memory.heapUsed', metric: mem.heapUsed });
+    emitter.metric({ name: 'example.memory.rss', value: mem.rss });
+    emitter.metric({ name: 'example.memory.heapTotal', value: mem.heapTotal });
+    emitter.metric({ name: 'example.memory.heapUsed', value: mem.heapUsed });
 }
 
 var heartbeatTimer = setInterval(heartbeat, 15000);
