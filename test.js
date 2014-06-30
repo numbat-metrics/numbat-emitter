@@ -115,6 +115,7 @@ describe('numbat-emitter', function()
         emitter.client.on('connect', function()
         {
             emitter.destroy();
+            emitter.destroy();
             done();
         });
     });

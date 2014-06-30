@@ -3,7 +3,7 @@
 [Numbat](http://www.arkive.org/numbat/myrmecobius-fasciatus/)-powered metrics emitter. See [numbat-collector](https://github.com/ceejbot/numbat-collector) for the matching metrics collector.
 
 [![Tests](http://img.shields.io/travis/ceejbot/numbat-emitter.svg?style=flat)](http://travis-ci.org/ceejbot/numbat-emitter)
-![Coverage](http://img.shields.io/badge/coverage-98%25-green.svg?style=flat)
+![Coverage](http://img.shields.io/badge/coverage-99%25-green.svg?style=flat)
 [![Dependencies](https://david-dm.org/ceejbot/numbat-emitter.svg)](https://david-dm.org/ceejbot/numbat-emitter)
 
 [![NPM](https://nodei.co/npm/numbat-emitter.png)](https://nodei.co/npm/numbat-emitter/)

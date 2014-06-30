@@ -30,6 +30,7 @@ Emitter.prototype.defaults = null;
 Emitter.prototype.backlog  = null;
 Emitter.prototype.client   = null;
 Emitter.prototype.ready    = false;
+Emitter.prototype.retries  = 0;
 
 Emitter.prototype.connect = function connect()
 {
@@ -70,14 +71,21 @@ Emitter.prototype.onError = function onError(err)
 {
     this.ready = false;
     this.emit('close');
-    this.connect();
+    this.retries++;
+    setTimeout(this.connect.bind(this), this.nextBackoff());
 };
 
 Emitter.prototype.onClose = function onClose()
 {
     this.ready = false;
     this.emit('close');
-    this.connect();
+    this.retries++;
+    setTimeout(this.connect.bind(this), this.nextBackoff());
+};
+
+Emitter.prototype.nextBackoff = function nextBackoff()
+{
+    return Math.min((Math.random() + 1) * 10 * Math.pow(2, this.retries), 60000);
 };
 
 Emitter.prototype.makeEvent = function makeEvent(attrs)
@@ -97,9 +105,9 @@ Emitter.prototype._write = function _write(event)
     this.output.write(JSON.stringify(event) + '\n');
 };
 
-Emitter.prototype.metric = function metric(opts)
+Emitter.prototype.metric = function metric(attrs)
 {
-    var event = this.makeEvent(opts);
+    var event = this.makeEvent(attrs);
     if (this.ready)
         this._write(event);
     else
