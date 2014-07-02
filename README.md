@@ -137,6 +137,10 @@ var e2 = {
 var e3 = { name: 'heartbeat', ttl: 30000 };
 ```
 
+## TODO
+
+* Backlog should be capped at a configurable size so you don't explode memory if your collector is down.
+
 ## Contributing
 
 Sure! Write tests with [Lab](https://www.npmjs.org/package/lab) & [must](https://www.npmjs.org/package/must). Use BSD/Allman bracing or I will stare at you funny and not take your pull request.

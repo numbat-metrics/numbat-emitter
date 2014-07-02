@@ -151,5 +151,5 @@ util.inherits(UDPStream, stream.Writable);
 UDPStream.prototype._write = function _write(event, encoding, callback)
 {
     var payload = new Buffer(event);
-    this.socket.send(payload, 0, payload.length, this.port, this.host);
+    this.socket.send(payload, 0, payload.length, this.port, this.host, callback);
 };
