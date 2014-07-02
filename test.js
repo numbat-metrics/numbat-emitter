@@ -5,6 +5,7 @@ var
     describe   = lab.describe,
     it         = lab.it,
     demand     = require('must'),
+    dgram      = require('dgram'),
     net        = require('net'),
     Emitter    = require('./index'),
     JSONStream = require('json-stream')
@@ -14,15 +15,24 @@ describe('numbat-emitter', function()
 {
     var mockOpts =
     {
-        host:    'localhost',
-        port:    4333,
-        node:    'node-1'
+        host: 'localhost',
+        port: 4333,
+        node: 'node-1'
     };
 
-    var mockServer;
+    var mockUDPOpts =
+    {
+        host: 'localhost',
+        port: 4334,
+        udp:  true,
+        node: 'node-1'
+    };
+
+    var mockServer, mockUDPServer;
 
     lab.before(function(done)
     {
+        var count = 0;
         function onConnection(socket)
         {
             var instream = new JSONStream();
@@ -36,8 +46,21 @@ describe('numbat-emitter', function()
         mockServer = net.createServer(onConnection);
         mockServer.listen(4333, function()
         {
-            done();
+            count++;
+            if (count == 2) done();
         });
+
+        mockUDPServer = dgram.createSocket('udp4');
+        mockUDPServer.on('listening', function()
+        {
+            count++;
+            if (count == 2) done();
+        });
+        mockUDPServer.on('message', function(msg, rinfo)
+        {
+            mockUDPServer.emit('received', JSON.parse(msg));
+        });
+        mockUDPServer.bind(4334);
     });
 
     it('requires an options object', function(done)
@@ -303,9 +326,41 @@ describe('numbat-emitter', function()
         done();
     });
 
+    it('can construct a UDP emitter', function(done)
+    {
+        var emitter = new Emitter(mockUDPOpts);
+        emitter.on('ready', function()
+        {
+            emitter.client.constructor.name.must.equal('UDPStream');
+            done();
+        });
+        emitter.connect();
+    });
+
+    it('writes event objects to its socket over udp', function(done)
+    {
+        function observer(d)
+        {
+            d.must.be.an.object();
+            d.must.have.property('host');
+            d.must.have.property('time');
+            d.value.must.equal(4);
+            mockUDPServer.removeListener('received', observer);
+            done();
+        }
+
+        mockUDPServer.on('received', observer);
+        var emitter = new Emitter(mockUDPOpts);
+        emitter.connect();
+        emitter.metric({ name: 'test', value: 4 });
+    });
+
+
+
     lab.after(function(done)
     {
         mockServer.close();
+        mockUDPServer.close();
         done();
     });
 });

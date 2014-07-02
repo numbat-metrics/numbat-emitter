@@ -1,9 +1,10 @@
 var
     _      = require('lodash'),
     assert = require('assert'),
+    dgram  = require('dgram'),
     events = require('events'),
     net    = require('net'),
-    stream = require('stream'),
+    stream = require('readable-stream'),
     util   = require('util')
     ;
 
@@ -43,7 +44,15 @@ Emitter.prototype.connect = function connect()
         this.client = null;
     }
 
-    this.client = net.connect(this.options);
+    if (this.options.udp)
+    {
+        this.client = new UDPStream(this.options);
+    }
+    else
+    {
+        this.client = net.connect(this.options);
+    }
+
     this.output.pipe(this.client);
     this.client.on('connect', this.onConnect.bind(this));
     this.client.on('error', this.onError.bind(this));
@@ -126,4 +135,21 @@ JSONOutputStream.prototype._transform = function _transformOut(object, encoding,
 {
     this.push(object);
     callback();
+};
+
+function UDPStream(opts)
+{
+    stream.Writable.call(this);
+    this.socket = dgram.createSocket('udp4');
+    this.host = opts.host;
+    this.port = opts.port;
+
+    process.nextTick(this.emit.bind(this, 'connect')); // because our socket sure won't!
+}
+util.inherits(UDPStream, stream.Writable);
+
+UDPStream.prototype._write = function _write(event, encoding, callback)
+{
+    var payload = new Buffer(event);
+    this.socket.send(payload, 0, payload.length, this.port, this.host);
 };

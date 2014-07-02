@@ -8,19 +8,52 @@
 
 [![NPM](https://nodei.co/npm/numbat-emitter.png)](https://nodei.co/npm/numbat-emitter/)
 
-## Usage
+## Example
 
 ```javascript
 var Emitter = require('numbat-emitter');
 
-var emitter = Emitter.createClient({
+var emitter = new Emitter({
     host: 'localhost',
     port: 8000,
+    udp: true,
     node: 'www-1'
 });
 emitter.metric({ name: 'httpd.latency', value: 30 });
 emitter.metric({ name: 'disk.used.percent', value: 36 });
 emitter.metric({ name: 'heartbeat'});
+```
+
+## Configuration
+
+The constructor requires an options object with either a host/port pair or the path of a socket file to connect to. It also requires a string `node` field naming the emitting node. A typical use:
+
+```javascript
+{
+    host: 'collector.example.com',
+    port: 8000,
+    node: 'tcp-emitter'
+}
+```
+
+If you wish to use udp instead of tcp, pass `udp: true`:
+
+```javascript
+{
+    host: 'localhost',
+    port: 8000,
+    udp:  true,
+    node: 'udp-emitter'
+}
+```
+
+And finally a unix domain socket:
+
+```javascript
+{
+    path: '/tmp/numbat-collector.sock',
+    node: 'uds-emitter'
+}
 ```
 
 ## Events
@@ -50,36 +83,38 @@ String. Required. Name of this event or metric. Use dots `.` to separate namespa
 
 ### time
 
-Number. Required. Timestamp in milliseconds since the epoch.
+Number. Optional. Timestamp in milliseconds since the epoch. If you do not pass a time field, one will be created for you with `Date.now()`.
 
 ### value
 
-Number. The value of this metric, if appropriate.
+Number. Optional. The value of this metric, if appropriate.
 
 ### host
 
-String. The hostname of the service generating this event, if relevant.
+String. Optional. The hostname of the service generating this event, if relevant.
 
 ### tags
 
-Array of strings. Use tags to hint to the analyzer/dashboard how to display this metric. Understood metric types include:
+Array of strings. Optional. Use tags to hint to the analyzer/dashboard how to display this metric. Understood metric types include:
 
 - `annotation`
 - `counter`
 - `gauge`
 - `histogram`
 
+Tags are *not* passed on to InfluxDB by the collector.
+
 ### status
 
-String. One of `okay`, `warning`, `critical`, or `unknown`. Use this to trigger alerts if this event represents a known-bad condition.
+String. Optional. One of `okay`, `warning`, `critical`, or `unknown`. Use this to trigger alerts if this event represents a known-bad condition.
 
 ### description
 
-Textual description of the event. Max 255 bytes.
+Textual description of the event. Max 255 bytes. Optional.
 
 ### ttl
 
-Number. Milliseconds that this event is considered valid. The analyzer will expire the event after `event.time` + `event.ttl`.
+Number. Optional. Milliseconds that this event is considered valid. The analyzer will expire the event after `event.time` + `event.ttl`.
 
 ## Practical event examples
 
