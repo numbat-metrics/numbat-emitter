@@ -235,6 +235,23 @@ describe('numbat-emitter', function()
         emitter.metric({ name: 'test', value: 4 });
     });
 
+    it('does not override the time field when present', function(done)
+    {
+        function observer(d)
+        {
+            d.must.be.an.object();
+            d.must.have.property('time');
+            d.time.toString().must.equal('2014-01-01T00:00:00.000Z');
+            mockServer.removeListener('received', observer);
+            done();
+        }
+
+        mockServer.on('received', observer);
+        var emitter = new Emitter(mockOpts);
+        emitter.metric({ name: 'test', value: 4, time: new Date('2014-01-01') });
+
+    });
+
     it('accumulates events in a backlog until connected', { timeout: 5000}, function(done)
     {
         var emitter = new Emitter(mockOpts);
