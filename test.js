@@ -63,316 +63,378 @@ describe('numbat-emitter', function()
         mockUDPServer.bind(4334);
     });
 
-    it('requires an options object', function(done)
+    describe('parseURI()', function()
     {
-        function shouldThrow() { return new Emitter(); }
-        shouldThrow.must.throw(/options/);
-        done();
-    });
-
-    it('requires a host & port option', function(done)
-    {
-        function shouldThrow() { return new Emitter({ host: 'example.com' }); }
-        shouldThrow.must.throw(/host/);
-        done();
-    });
-
-    it('requires a path option otherwise', function(done)
-    {
-        function shouldThrow() { return new Emitter({ path: '/tmp/numbat.sock' }); }
-        shouldThrow.must.throw(/node/);
-        done();
-    });
-
-    it('requires a node name option', function(done)
-    {
-        function shouldThrow() { return new Emitter({ host: 'localhost', port: 4000 }); }
-        shouldThrow.must.throw(/node/);
-        done();
-    });
-
-    it('can be constructed', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        emitter.must.be.an.object();
-
-        emitter.must.have.property('options');
-        emitter.options.must.be.an.object();
-        emitter.options.must.equal(mockOpts);
-
-        emitter.must.have.property('defaults');
-        emitter.defaults.must.be.an.object();
-
-        emitter.must.have.property('backlog');
-        emitter.backlog.must.be.an.array();
-
-        emitter.destroy();
-        done();
-    });
-
-    it('calls connect() when constructed', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        emitter.must.have.property('client');
-        emitter.client.on('connect', function()
+        it('parses the tcp uri option', function(done)
         {
-            emitter.destroy();
+            var opts = { uri: 'tcp://localhost:5000', node: 'foo'};
+            var result = Emitter.parseURI(opts);
+            opts.host.must.equal('localhost');
+            opts.port.must.equal('5000');
+            opts.must.not.have.property('udp');
+            opts.must.not.have.property('uri');
+            done();
+        });
+
+        it('parseURI() parses the udp uri option', function(done)
+        {
+            var opts = { uri: 'udp://localhost:5000', node: 'foo'};
+            var result = Emitter.parseURI(opts);
+            opts.host.must.equal('localhost');
+            opts.port.must.equal('5000');
+            opts.udp.must.be.true();
+            done();
+        });
+
+        it('parseURIparses the socket uri option', function(done)
+        {
+            var opts = { uri: 'socket:/tmp/foo.sock', node: 'foo'};
+            var result = Emitter.parseURI(opts);
+            result.path.must.equal('/tmp/foo.sock');
+            done();
+        });
+
+        it('throws when given an unsupported uri', function(done)
+        {
+            function shouldThrow() { return Emitter.parseURI({ uri: 'http://example.com', node: 'foo'}); }
+            shouldThrow.must.throw(/unsupported destination uri/);
             done();
         });
     });
 
-    it('allows connect() to be called twice safely', function(done)
+    describe('constructor', function(done)
     {
-        var emitter = new Emitter(mockOpts);
-        emitter.client.on('connect', function()
+        it('requires an options object', function(done)
         {
-            emitter.connect();
-            emitter.destroy();
+            function shouldThrow() { return new Emitter(); }
+            shouldThrow.must.throw(/options/);
             done();
         });
-    });
 
-    it('allows destroy() to be called twice safely', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        emitter.client.on('connect', function()
+        it('requires a host & port option', function(done)
         {
-            emitter.destroy();
-            emitter.destroy();
+            function shouldThrow() { return new Emitter({ host: 'example.com' }); }
+            shouldThrow.must.throw(/host/);
             done();
         });
-    });
 
-    it('adds listeners for `connect`, `error`, and `close`', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        var listeners = emitter.client.listeners('connect');
-        listeners.must.be.an.array();
-        listeners.length.must.be.above(0);
-
-        listeners = emitter.client.listeners('error');
-        listeners.must.be.an.array();
-        listeners.length.must.be.above(0);
-
-        listeners = emitter.client.listeners('close');
-        listeners.must.be.an.array();
-        listeners.length.must.be.above(0);
-
-        emitter.destroy();
-
-        done();
-    });
-
-    it('reconnects on close', function(done)
-    {
-        var count = 0;
-        var emitter = new Emitter(mockOpts);
-        emitter.on('ready', function()
+        it('requires a path option otherwise', function(done)
         {
-            count++;
-            if (count == 2)
-            {
-                emitter.destroy();
-                done();
-            }
+            function shouldThrow() { return new Emitter({ path: '/tmp/numbat.sock' }); }
+            shouldThrow.must.throw(/node/);
+            done();
         });
 
-        emitter.client.end();
-    });
-
-    it('reconnects on error', function(done)
-    {
-        var count = 0;
-        var emitter = new Emitter(mockOpts);
-        emitter.on('ready', function()
+        it('requires a node name option', function(done)
         {
-            count++;
-            switch (count)
-            {
-            case 1:
-                emitter.client.emit('error', new Error('whee!'));
-                break;
-            case 2:
-                emitter.destroy();
-                done();
-                break;
-            }
+            function shouldThrow() { return new Emitter({ host: 'localhost', port: 4000 }); }
+            shouldThrow.must.throw(/node/);
+            done();
         });
 
-        emitter.connect();
-    });
-
-    it('requires that an object be passed to metric()', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        function shouldThrow() { emitter.metric(); }
-        shouldThrow.must.throw(/empty event/);
-        done();
-    });
-
-    it('requires a `name` field for all metrics', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        function shouldThrow() { emitter.metric({ foo: 'bar' }); }
-        shouldThrow.must.throw(/name/);
-        done();
-    });
-
-    it('writes event objects to its socket', function(done)
-    {
-        function observer(d)
+        it('can be constructed', function(done)
         {
-            d.must.be.an.object();
-            d.must.have.property('host');
-            d.must.have.property('time');
-            d.value.must.equal(4);
-            mockServer.removeListener('received', observer);
-            done();
-        }
+            var emitter = new Emitter(mockOpts);
+            emitter.must.be.an.object();
 
-        mockServer.on('received', observer);
-        var emitter = new Emitter(mockOpts);
-        emitter.metric({ name: 'test', value: 4 });
-    });
+            emitter.must.have.property('options');
+            emitter.options.must.be.an.object();
+            emitter.options.must.equal(mockOpts);
 
-    it('does not override the time field when present', function(done)
-    {
-        function observer(d)
-        {
-            d.must.be.an.object();
-            d.must.have.property('time');
-            d.time.toString().must.equal('2014-01-01T00:00:00.000Z');
-            mockServer.removeListener('received', observer);
-            done();
-        }
+            emitter.must.have.property('defaults');
+            emitter.defaults.must.be.an.object();
 
-        mockServer.on('received', observer);
-        var emitter = new Emitter(mockOpts);
-        emitter.metric({ name: 'test', value: 4, time: new Date('2014-01-01') });
-
-    });
-
-    it('accumulates events in a backlog until connected', { timeout: 5000}, function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-
-        emitter.on('close', function()
-        {
-            emitter.metric({ name: 'test.splort', value: 4 });
-            emitter.metric({ name: 'test.latency', value: 30 });
-
+            emitter.must.have.property('backlog');
             emitter.backlog.must.be.an.array();
-            emitter.backlog.length.must.equal(2);
-            emitter.backlog[0].must.have.property('name');
-            emitter.backlog[0].name.must.equal('test.splort');
+
+            emitter.destroy();
+            done();
+        });
+
+        it('calls parseURI() when given a uri option', function(done)
+        {
+            var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', node: 'test' });
+            e.must.have.property('options');
+            e.options.must.not.have.property('uri');
+            e.options.must.have.property('path');
+            done();
+        });
+    });
+
+    describe('connections', function()
+    {
+        it('calls connect() when constructed', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            emitter.must.have.property('client');
+            emitter.client.on('connect', function()
+            {
+                emitter.destroy();
+                done();
+            });
+        });
+
+        it('allows connect() to be called twice safely', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            emitter.client.on('connect', function()
+            {
+                emitter.connect();
+                emitter.destroy();
+                done();
+            });
+        });
+
+        it('allows destroy() to be called twice safely', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            emitter.client.on('connect', function()
+            {
+                emitter.destroy();
+                emitter.destroy();
+                done();
+            });
+        });
+
+        it('adds listeners for `connect`, `error`, and `close`', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            var listeners = emitter.client.listeners('connect');
+            listeners.must.be.an.array();
+            listeners.length.must.be.above(0);
+
+            listeners = emitter.client.listeners('error');
+            listeners.must.be.an.array();
+            listeners.length.must.be.above(0);
+
+            listeners = emitter.client.listeners('close');
+            listeners.must.be.an.array();
+            listeners.length.must.be.above(0);
+
+            emitter.destroy();
 
             done();
         });
 
-        emitter.connect = function() {};
-        emitter.client.end();
+        it('reconnects on close', function(done)
+        {
+            var count = 0;
+            var emitter = new Emitter(mockOpts);
+            emitter.on('ready', function()
+            {
+                count++;
+                if (count == 2)
+                {
+                    emitter.destroy();
+                    done();
+                }
+            });
+
+            emitter.client.end();
+        });
+
+        it('reconnects on error', function(done)
+        {
+            var count = 0;
+            var emitter = new Emitter(mockOpts);
+            emitter.on('ready', function()
+            {
+                count++;
+                switch (count)
+                {
+                case 1:
+                    emitter.client.emit('error', new Error('whee!'));
+                    break;
+                case 2:
+                    emitter.destroy();
+                    done();
+                    break;
+                }
+            });
+
+            emitter.connect();
+        });
     });
 
-    it('sends its backlog when connected', function(done)
+    describe('metric()', function()
     {
-        var count = 0;
-        function observer(d)
+        it('requires that an object be passed to metric()', function(done)
         {
-            count++;
-            if (count === 1)
-                d.name.must.equal('test.splort');
+            var emitter = new Emitter(mockOpts);
+            function shouldThrow() { emitter.metric(); }
+            shouldThrow.must.throw(/empty event/);
+            done();
+        });
 
-            if (count === 2)
+        it('requires a `name` field for all metrics', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            function shouldThrow() { emitter.metric({ foo: 'bar' }); }
+            shouldThrow.must.throw(/name/);
+            done();
+        });
+
+        it('writes event objects to its socket', function(done)
+        {
+            function observer(d)
             {
-                d.name.must.equal('test.latency');
+                d.must.be.an.object();
+                d.must.have.property('host');
+                d.must.have.property('time');
+                d.value.must.equal(4);
                 mockServer.removeListener('received', observer);
                 done();
             }
-        }
-        mockServer.on('received', observer);
 
-        var emitter = new Emitter(mockOpts);
-
-        function fillBacklog()
-        {
-            emitter.removeListener('close', fillBacklog);
-            emitter.metric({ name: 'test.splort', value: 4 });
-            emitter.metric({ name: 'test.latency', value: 30 });
-        }
-
-        emitter.on('close', fillBacklog);
-        var orig = emitter.connect.bind(emitter);
-        emitter.connect = function() { setTimeout(orig, 1000); };
-        emitter.client.end();
-    });
-
-    it('sends normally when connected', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        emitter.on('ready', function()
-        {
-            emitter.metric({ name: 'test.splort', value: 4 });
-            emitter.metric({ name: 'test.latency', value: 30 });
+            mockServer.on('received', observer);
+            var emitter = new Emitter(mockOpts);
+            emitter.metric({ name: 'test', value: 4 });
         });
 
-        var count = 0;
-        function observer(d)
+        it('does not override the time field when present', function(done)
         {
-            count++;
-            switch (count)
+            function observer(d)
             {
-            case 1:
-                d.name.must.equal('test.splort');
-                break;
-            case 2:
-                d.name.must.equal('test.latency');
+                d.must.be.an.object();
+                d.must.have.property('time');
+                d.time.toString().must.equal('2014-01-01T00:00:00.000Z');
                 mockServer.removeListener('received', observer);
                 done();
-                break;
             }
-        }
-        mockServer.on('received', observer);
 
-        emitter.connect();
-    });
+            mockServer.on('received', observer);
+            var emitter = new Emitter(mockOpts);
+            emitter.metric({ name: 'test', value: 4, time: new Date('2014-01-01') });
 
-    it('destroy can be safely called before connect', function(done)
-    {
-        var emitter = new Emitter(mockOpts);
-        emitter.destroy();
-        done();
-    });
+        });
 
-    it('can construct a UDP emitter', function(done)
-    {
-        var emitter = new Emitter(mockUDPOpts);
-        emitter.on('ready', function()
+        it('accumulates events in a backlog until connected', { timeout: 5000}, function(done)
         {
-            emitter.client.constructor.name.must.equal('UDPStream');
+            var emitter = new Emitter(mockOpts);
+
+            emitter.on('close', function()
+            {
+                emitter.metric({ name: 'test.splort', value: 4 });
+                emitter.metric({ name: 'test.latency', value: 30 });
+
+                emitter.backlog.must.be.an.array();
+                emitter.backlog.length.must.equal(2);
+                emitter.backlog[0].must.have.property('name');
+                emitter.backlog[0].name.must.equal('test.splort');
+
+                done();
+            });
+
+            emitter.connect = function() {};
+            emitter.client.end();
+        });
+    });
+
+    describe('backpressure', function()
+    {
+        it('sends its backlog when connected', function(done)
+        {
+            var count = 0;
+            function observer(d)
+            {
+                count++;
+                if (count === 1)
+                    d.name.must.equal('test.splort');
+
+                if (count === 2)
+                {
+                    d.name.must.equal('test.latency');
+                    mockServer.removeListener('received', observer);
+                    done();
+                }
+            }
+            mockServer.on('received', observer);
+
+            var emitter = new Emitter(mockOpts);
+
+            function fillBacklog()
+            {
+                emitter.removeListener('close', fillBacklog);
+                emitter.metric({ name: 'test.splort', value: 4 });
+                emitter.metric({ name: 'test.latency', value: 30 });
+            }
+
+            emitter.on('close', fillBacklog);
+            var orig = emitter.connect.bind(emitter);
+            emitter.connect = function() { setTimeout(orig, 1000); };
+            emitter.client.end();
+        });
+
+        it('sends normally when connected', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            emitter.on('ready', function()
+            {
+                emitter.metric({ name: 'test.splort', value: 4 });
+                emitter.metric({ name: 'test.latency', value: 30 });
+            });
+
+            var count = 0;
+            function observer(d)
+            {
+                count++;
+                switch (count)
+                {
+                case 1:
+                    d.name.must.equal('test.splort');
+                    break;
+                case 2:
+                    d.name.must.equal('test.latency');
+                    mockServer.removeListener('received', observer);
+                    done();
+                    break;
+                }
+            }
+            mockServer.on('received', observer);
+
+            emitter.connect();
+        });
+
+        it('destroy can be safely called before connect', function(done)
+        {
+            var emitter = new Emitter(mockOpts);
+            emitter.destroy();
             done();
         });
-        emitter.connect();
     });
 
-    it('writes event objects to its socket over udp', function(done)
+    describe('udp', function()
     {
-        function observer(d)
+
+        it('can construct a UDP emitter', function(done)
         {
-            d.must.be.an.object();
-            d.must.have.property('host');
-            d.must.have.property('time');
-            d.value.must.equal(4);
-            mockUDPServer.removeListener('received', observer);
-            done();
-        }
+            var emitter = new Emitter(mockUDPOpts);
+            emitter.on('ready', function()
+            {
+                emitter.client.constructor.name.must.equal('UDPStream');
+                done();
+            });
+            emitter.connect();
+        });
 
-        mockUDPServer.on('received', observer);
-        var emitter = new Emitter(mockUDPOpts);
-        emitter.connect();
-        emitter.metric({ name: 'test', value: 4 });
+        it('writes event objects to its socket over udp', function(done)
+        {
+            function observer(d)
+            {
+                d.must.be.an.object();
+                d.must.have.property('host');
+                d.must.have.property('time');
+                d.value.must.equal(4);
+                mockUDPServer.removeListener('received', observer);
+                done();
+            }
+
+            mockUDPServer.on('received', observer);
+            var emitter = new Emitter(mockUDPOpts);
+            emitter.connect();
+            emitter.metric({ name: 'test', value: 4 });
+        });
     });
-
-
 
     lab.after(function(done)
     {

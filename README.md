@@ -22,7 +22,18 @@ emitter.metric({ name: 'heartbeat'});
 
 ## Configuration
 
-The constructor requires an options object with either a host/port pair or the path of a socket file to connect to. It also requires a string `node` field naming the emitting node. A typical use:
+The constructor requires an options object with a node name in the `node` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`. Do this in the `uri` field of the options object.
+
+An example:
+
+```javascript
+{
+    uri:  'udp://localhost:8000',
+    node: 'udp-emitter'
+}
+```
+
+You can also specify the destination more verbosely using `host` and `port` fields:
 
 ```javascript
 {
@@ -48,7 +59,7 @@ And finally a unix domain socket:
 ```javascript
 {
     path: '/tmp/numbat-collector.sock',
-    node: 'uds-emitter'
+    node: 'socket-emitter'
 }
 ```
 

@@ -5,16 +5,19 @@ var
     events = require('events'),
     net    = require('net'),
     stream = require('readable-stream'),
+    url    = require('url'),
     util   = require('util')
     ;
 
 var Emitter = module.exports = function Emitter(opts)
 {
     assert(opts && _.isObject(opts), 'you must pass an options object to the Emitter constructor');
-    assert((opts.host && opts.port) || opts.path, 'you must pass either a path option or a host/port pair');
+    assert((opts.host && opts.port) || opts.path || opts.uri, 'you must pass uri, path, or a host/port pair');
     assert(opts.node && _.isString(opts.node), 'you must pass a `node` option naming this host');
 
     events.EventEmitter.call(this);
+
+    if (opts.uri) Emitter.parseURI(opts);
 
     this.options = opts;
     this.defaults = {};
@@ -32,6 +35,36 @@ Emitter.prototype.backlog  = null;
 Emitter.prototype.client   = null;
 Emitter.prototype.ready    = false;
 Emitter.prototype.retries  = 0;
+
+Emitter.parseURI = function(options)
+{
+    var parsed = url.parse(options.uri);
+
+    switch (parsed.protocol)
+    {
+        case 'udp:':
+            options.udp = true;
+            options.host = parsed.hostname;
+            options.port = parsed.port;
+            break;
+
+        case 'sock:':
+        case 'socket:':
+            options.path = parsed.pathname;
+            break;
+
+        case 'tcp:':
+            options.host = parsed.hostname;
+            options.port = parsed.port;
+            break;
+
+        default:
+            throw(new Error('unsupported destination uri: ' + options.uri));
+    }
+
+    delete options.uri;
+    return options;
+};
 
 Emitter.prototype.connect = function connect()
 {

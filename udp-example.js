@@ -3,9 +3,7 @@
 var Emitter = require('./index');
 
 var emitter = new Emitter({
-    host: 'localhost',
-    port: 4677,
-    udp:  true,
+    uri: 'udp://localhost:4677',
     node: 'example-1'
 });
 
