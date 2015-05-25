@@ -7,16 +7,15 @@
     "url": "https://github.com/ceejbot/numbat-emitter/issues"
   },
   "dependencies": {
-    "jshint": "~2.6.0",
     "json-stream": "~1.0.0",
-    "lodash": "~3.1.0",
+    "lodash": "~3.9.2",
     "must": "~0.12.0",
-    "readable-stream": "^1.1.13"
+    "readable-stream": "~1.1.13"
   },
   "devDependencies": {
-    "jshint": "^2.5.6",
-    "lab": "~5.2.1",
-    "must": "^0.12.0"
+    "jshint": "~2.7.0",
+    "lab": "~5.9.0",
+    "must": "~0.12.0"
   },
   "homepage": "https://github.com/ceejbot/numbat-emitter",
   "keywords": [
