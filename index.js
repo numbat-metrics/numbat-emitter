@@ -7,7 +7,7 @@ var
     stream = require('readable-stream'),
     url    = require('url'),
     util   = require('util')
-    ;
+;
 
 var Emitter = module.exports = function Emitter(opts)
 {
