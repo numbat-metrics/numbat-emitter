@@ -18,6 +18,8 @@ var Emitter = module.exports = function Emitter(opts)
 	events.EventEmitter.call(this);
 
 	if (opts.uri) Emitter.parseURI(opts);
+	if (opts.maxretries) this.maxretries = parseInt(opts.maxretries, 10);
+	if (opts.maxbacklog) this.maxbacklog = parseInt(opts.maxbacklog, 10);
 
 	this.options = opts;
 	this.defaults = {};
@@ -32,9 +34,12 @@ util.inherits(Emitter, events.EventEmitter);
 
 Emitter.prototype.defaults = null;
 Emitter.prototype.backlog  = null;
+Emitter.prototype.maxbacklog = 1000;
 Emitter.prototype.client   = null;
 Emitter.prototype.ready    = false;
 Emitter.prototype.retries  = 0;
+Emitter.prototype.maxretries = 100;
+Emitter.prototype.maxbacklog = 1000;
 
 Emitter.parseURI = function(options)
 {
@@ -105,6 +110,7 @@ Emitter.prototype.onConnect = function onConnect()
 {
 	while (this.backlog.length)
 		this._write(this.backlog.shift());
+	this.retries = 0;
 	this.ready = true;
 	this.emit('ready');
 };
@@ -112,17 +118,17 @@ Emitter.prototype.onConnect = function onConnect()
 Emitter.prototype.onError = function onError(err)
 {
 	this.ready = false;
-	this.emit('close');
-	this.retries++;
-	setTimeout(this.connect.bind(this), this.nextBackoff());
 };
 
 Emitter.prototype.onClose = function onClose()
 {
 	this.ready = false;
-	this.emit('close');
 	this.retries++;
-	setTimeout(this.connect.bind(this), this.nextBackoff());
+	if (this.retries <= this.maxretries)
+		setTimeout(this.connect.bind(this), this.nextBackoff());
+	else
+		this.emit('failed', 'retried ' + this.retries + ' times; giving up');
+	this.emit('close');
 };
 
 Emitter.prototype.nextBackoff = function nextBackoff()
@@ -142,9 +148,13 @@ Emitter.prototype.makeEvent = function makeEvent(attrs)
 	return event;
 };
 
-Emitter.prototype._write = function _write(event)
+Emitter.prototype._write = function _write(event, encoding, callback)
 {
-	this.output.write(JSON.stringify(event) + '\n');
+	var payload = event;
+	if (_.isObject(event))
+		payload = JSON.stringify(event) + '\n';
+
+	this.output.write(payload);
 };
 
 Emitter.prototype.metric = function metric(attrs)
@@ -154,6 +164,9 @@ Emitter.prototype.metric = function metric(attrs)
 		this._write(event);
 	else
 		this.backlog.push(event);
+
+	while (this.backlog.length > this.maxbacklog)
+		this.backlog.shift();
 };
 
 function JSONOutputStream()

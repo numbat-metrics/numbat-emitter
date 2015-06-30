@@ -8,7 +8,7 @@ var
 	net        = require('net'),
 	Emitter    = require('./index'),
 	JSONStream = require('json-stream')
-	;
+;
 
 describe('numbat-emitter', function()
 {
@@ -229,28 +229,6 @@ describe('numbat-emitter', function()
 
 			emitter.client.end();
 		});
-
-		it('reconnects on error', function(done)
-		{
-			var count = 0;
-			var emitter = new Emitter(mockOpts);
-			emitter.on('ready', function()
-			{
-				count++;
-				switch (count)
-				{
-				case 1:
-					emitter.client.emit('error', new Error('whee!'));
-					break;
-				case 2:
-					emitter.destroy();
-					done();
-					break;
-				}
-			});
-
-			emitter.connect();
-		});
 	});
 
 	describe('metric()', function()
@@ -302,7 +280,6 @@ describe('numbat-emitter', function()
 			mockServer.on('received', observer);
 			var emitter = new Emitter(mockOpts);
 			emitter.metric({ name: 'test', value: 4, time: new Date('2014-01-01') });
-
 		});
 
 		it('accumulates events in a backlog until connected', function(done)
