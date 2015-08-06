@@ -4,6 +4,7 @@ var
 	dgram  = require('dgram'),
 	events = require('events'),
 	net    = require('net'),
+	os     = require('os'),
 	stream = require('readable-stream'),
 	url    = require('url'),
 	util   = require('util')
@@ -12,8 +13,8 @@ var
 var Emitter = module.exports = function Emitter(opts)
 {
 	assert(opts && _.isObject(opts), 'you must pass an options object to the Emitter constructor');
-	assert((opts.host && opts.port) || opts.path || opts.uri, 'you must pass uri, path, or a host/port pair');
-	assert(opts.node && _.isString(opts.node), 'you must pass a `node` option naming this host');
+	assert((opts.host && opts.port) || opts.path || opts.uri, 'you must pass uri, path, or a host/port pair for the collector');
+	assert(opts.app && _.isString(opts.app), 'you must pass an `app` option naming this service or app');
 
 	events.EventEmitter.call(this);
 
@@ -23,8 +24,7 @@ var Emitter = module.exports = function Emitter(opts)
 
 	this.options = opts;
 	this.defaults = {};
-	this.defaults.host = opts.node;
-	this.defaults.tags = opts.tags; // optional
+	this.defaults.host = os.hostname();
 	this.backlog = [];
 	this.output = new JSONOutputStream();
 
@@ -144,6 +144,7 @@ Emitter.prototype.makeEvent = function makeEvent(attrs)
 	var event = {};
 	_.defaults(event, attrs, this.defaults);
 	if (!event.time) event.time = Date.now(); // milliseconds!
+	if (!event.value) event.value = 1;
 
 	return event;
 };

@@ -1,11 +1,11 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach: true, afterEach:true */
 'use strict';
 
-
 var
 	demand     = require('must'),
 	dgram      = require('dgram'),
 	net        = require('net'),
+	os         = require('os'),
 	Emitter    = require('./index'),
 	JSONStream = require('json-stream')
 ;
@@ -16,7 +16,7 @@ describe('numbat-emitter', function()
 	{
 		host: 'localhost',
 		port: 4333,
-		node: 'node-1'
+		app: 'node-1'
 	};
 
 	var mockUDPOpts =
@@ -24,7 +24,7 @@ describe('numbat-emitter', function()
 		host: 'localhost',
 		port: 4334,
 		udp:  true,
-		node: 'node-1'
+		app: 'node-1'
 	};
 
 	var mockServer, mockUDPServer;
@@ -66,7 +66,7 @@ describe('numbat-emitter', function()
 	{
 		it('parses the tcp uri option', function(done)
 		{
-			var opts = { uri: 'tcp://localhost:5000', node: 'foo'};
+			var opts = { uri: 'tcp://localhost:5000', app: 'foo'};
 			var result = Emitter.parseURI(opts);
 			opts.host.must.equal('localhost');
 			opts.port.must.equal('5000');
@@ -77,7 +77,7 @@ describe('numbat-emitter', function()
 
 		it('parseURI() parses the udp uri option', function(done)
 		{
-			var opts = { uri: 'udp://localhost:5000', node: 'foo'};
+			var opts = { uri: 'udp://localhost:5000', app: 'foo'};
 			var result = Emitter.parseURI(opts);
 			opts.host.must.equal('localhost');
 			opts.port.must.equal('5000');
@@ -87,14 +87,14 @@ describe('numbat-emitter', function()
 
 		it('parseURIparses the socket uri option', function()
 		{
-			var opts = { uri: 'socket:/tmp/foo.sock', node: 'foo'};
+			var opts = { uri: 'socket:/tmp/foo.sock', app: 'foo'};
 			var result = Emitter.parseURI(opts);
 			result.path.must.equal('/tmp/foo.sock');
 		});
 
 		it('throws when given an unsupported uri', function()
 		{
-			function shouldThrow() { return Emitter.parseURI({ uri: 'http://example.com', node: 'foo'}); }
+			function shouldThrow() { return Emitter.parseURI({ uri: 'http://example.com', app: 'foo'}); }
 			shouldThrow.must.throw(/unsupported destination uri/);
 		});
 	});
@@ -118,15 +118,14 @@ describe('numbat-emitter', function()
 		it('requires a path option otherwise', function(done)
 		{
 			function shouldThrow() { return new Emitter({ path: '/tmp/numbat.sock' }); }
-			shouldThrow.must.throw(/node/);
+			shouldThrow.must.throw(/app/);
 			done();
 		});
 
-		it('requires a node name option', function(done)
+		it('requires an app name option', function()
 		{
 			function shouldThrow() { return new Emitter({ host: 'localhost', port: 4000 }); }
-			shouldThrow.must.throw(/node/);
-			done();
+			shouldThrow.must.throw(/app/);
 		});
 
 		it('can be constructed', function(done)
@@ -148,13 +147,19 @@ describe('numbat-emitter', function()
 			done();
 		});
 
-		it('calls parseURI() when given a uri option', function(done)
+		it('calls parseURI() when given a uri option', function()
 		{
-			var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', node: 'test' });
+			var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
 			e.must.have.property('options');
 			e.options.must.not.have.property('uri');
 			e.options.must.have.property('path');
-			done();
+		});
+
+		it('adds the host name to its default fields', function()
+		{
+			var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+			e.defaults.must.have.property('host');
+			e.defaults.host.must.equal(os.hostname());
 		});
 	});
 
@@ -247,6 +252,22 @@ describe('numbat-emitter', function()
 			function shouldThrow() { emitter.metric({ foo: 'bar' }); }
 			shouldThrow.must.throw(/name/);
 			done();
+		});
+
+		it('supplies a value of 1 if one is not provided', function(done)
+		{
+			function observer(d)
+			{
+				d.must.be.an.object();
+				d.must.have.property('value');
+				d.value.must.equal(1);
+				mockServer.removeListener('received', observer);
+				done();
+			}
+
+			mockServer.on('received', observer);
+			var emitter = new Emitter(mockOpts);
+			emitter.metric({ name: 'test' });
 		});
 
 		it('writes event objects to its socket', function(done)

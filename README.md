@@ -13,7 +13,7 @@ var emitter = new Emitter({
     host: 'localhost',
     port: 8000,
     udp: true,
-    node: 'www-1'
+    app: 'www-1'
 });
 emitter.metric({ name: 'httpd.latency', value: 30 });
 emitter.metric({ name: 'disk.used.percent', value: 36 });
