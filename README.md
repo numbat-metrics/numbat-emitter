@@ -10,9 +10,7 @@
 var Emitter = require('numbat-emitter');
 
 var emitter = new Emitter({
-    host: 'localhost',
-    port: 8000,
-    udp: true,
+    uri: 'tcp://localhost:8000',
     app: 'www-1'
 });
 emitter.metric({ name: 'httpd.latency', value: 30 });
@@ -22,14 +20,16 @@ emitter.metric({ name: 'heartbeat'});
 
 ## Configuration
 
-The constructor requires an options object with a node name in the `node` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`. Do this in the `uri` field of the options object.
+The constructor requires an options object with an app name in the `app` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`. Do this in the `uri` field of the options object.
 
 An example:
 
 ```javascript
 {
-    uri:  'udp://localhost:8000',
-    node: 'udp-emitter'
+    uri:  'udp://localhost:8000', // where numbat-collector is running
+    app: 'udp-emitter',  // name of the app emitting metrics; meaningful to you
+    maxretries: 10, // number of times to retry connecting before giving up
+    maxbacklog: 200, // max number of metrics to hold in backlog during reconnects
 }
 ```
 
@@ -39,7 +39,7 @@ You can also specify the destination more verbosely using `host` and `port` fiel
 {
     host: 'collector.example.com',
     port: 8000,
-    node: 'tcp-emitter'
+    app: 'tcp-emitter'
 }
 ```
 
@@ -50,7 +50,7 @@ If you wish to use udp instead of tcp, pass `udp: true`:
     host: 'localhost',
     port: 8000,
     udp:  true,
-    node: 'udp-emitter'
+    app: 'udp-emitter'
 }
 ```
 
@@ -59,7 +59,7 @@ And finally a unix domain socket:
 ```javascript
 {
     path: '/tmp/numbat-collector.sock',
-    node: 'socket-emitter'
+    app: 'socket-emitter'
 }
 ```
 
@@ -70,17 +70,18 @@ Valid events look like this:
 ```javascript
 {
     name: 'name.of.metric',
-    time: ts-in-ms,
     value: 42
-    host: 'hostname.example.com',
-    tags: ['array', 'of', 'tags'],
     status: 'okay' | 'warning' | 'critical' | 'unknown',
     description: 'textual description',
     ttl: ms-to-live,
+    // fields provided for you
+    app: 'appname-from-options',
+    host: os.hostname(),
+    time: ts-in-ms,
 }
 ```
 
-You can add any fields you like & they will be persisted in InfluxDB. However, only the fields listed above are meaninful to the analyzer. Those fields are described in detail below.
+You can add any fields you like & they will be persisted in InfluxDB. However, only the fields listed above are meaningful to the analyzer. Those fields are described in detail below.
 
 NOTE: You can of course emit any events you like! The style of events required/expected by numbat's [analyzer](https://github.com/ceejbot/numbat-analyzer), however, might change in development.
 
@@ -94,22 +95,7 @@ Number. Optional. Timestamp in milliseconds since the epoch. If you do not pass 
 
 ### value
 
-Number. Optional. The value of this metric, if appropriate.
-
-### host
-
-String. Optional. The hostname of the service generating this event, if relevant.
-
-### tags
-
-Array of strings. Optional. Use tags to hint to the analyzer/dashboard how to display this metric. Understood metric types include:
-
-- `annotation`
-- `counter`
-- `gauge`
-- `histogram`
-
-Tags are *not* passed on to InfluxDB by the collector.
+Number. Optional. The value of this metric, if appropriate. If you do not pass a value field, it will be defaulted to `1`.
 
 ### status
 
@@ -131,22 +117,16 @@ See also the example emitter in [example.js](./example.js).
 var e1 = {
     name: 'request.latency',
     value: 42
-    tags: ['app', 'histogram' ],
     status: 'okay',
 };
 var e2 = {
     name: 'request.latency',
     value: 5023
-    tags: ['app', 'histogram' ],
     status: 'warning',
 };
 
 var e3 = { name: 'heartbeat', ttl: 30000 };
 ```
-
-## TODO
-
-* Backlog should be capped at a configurable size so you don't explode memory if your collector is down.
 
 ## Contributing
 
