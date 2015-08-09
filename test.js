@@ -21,9 +21,7 @@ describe('numbat-emitter', function()
 
 	var mockUDPOpts =
 	{
-		host: 'localhost',
-		port: 4334,
-		udp:  true,
+		uri: 'udp://localhost:4334',
 		app: 'node-1'
 	};
 
@@ -277,6 +275,8 @@ describe('numbat-emitter', function()
 				d.must.be.an.object();
 				d.must.have.property('host');
 				d.must.have.property('time');
+				d.must.have.property('app');
+				d.app.must.equal('node-1');
 				d.value.must.equal(4);
 				mockServer.removeListener('received', observer);
 				done();

@@ -4,7 +4,7 @@ var Emitter = require('./index');
 
 var emitter = new Emitter({
 	uri:  'tcp://localhost:4677',
-	node: 'tcp-emitter',
+	app: 'tcp-emitter',
 	maxretries: 10,
 	maxbacklog: 5
 });

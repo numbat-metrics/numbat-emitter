@@ -25,6 +25,7 @@ var Emitter = module.exports = function Emitter(opts)
 	this.options = opts;
 	this.defaults = {};
 	this.defaults.host = os.hostname();
+	this.defaults.app = opts.app;
 	this.backlog = [];
 	this.output = new JSONOutputStream();
 

@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "blanket": "~1.1.7",
+    "jscs": "~2.0.0",
     "jshint": "~2.8.0",
     "mocha": "~2.2.5",
     "mocoverage": "~1.0.0",
@@ -48,7 +49,7 @@
     "url": "git://github.com/ceejbot/numbat-emitter.git"
   },
   "scripts": {
-    "lint": "jshint *.js",
+    "lint": "jshint *.js && jscs *.js",
     "test": "mocha -t 5000 --check-leaks --ui exports --require blanket -R mocoverage test.js",
     "test-cov": "mocha -t 5000 --require blanket -R travis-cov test.js",
     "test-travis": "npm run lint && mocha -R spec -t 5000 test.js && npm run test-cov"
