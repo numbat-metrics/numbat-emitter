@@ -31,7 +31,7 @@ Config options:
 |--------|-------------|-----------|---------|
 | uri    | uri of the metrics collector | either this or path | |
 | path   | path to the unix domain socket where the collector is listening | either this or uri ||
-| app    | name of this service or app; meaningful to you | y | |
+| app    | name of this service or app; every metric name will be prefixed with it | y | |
 | node   | name of this specific app instance |  | |
 | maxretries | number of times to retry connecting before giving up |  | 100 |
 | maxbacklog | max number of metrics to hold in backlog during reconnects | | 1000 |
@@ -82,7 +82,7 @@ NOTE: You can of course emit any events you like! The style of events required/e
 
 ### name
 
-String. Required. Name of this event or metric. Use dots `.` to separate namespaces.
+String. Required. Name of this event or metric. Use dots `.` to separate namespaces. If you do not prefix the metric name with `yourapp.`, numbat will do this for you.
 
 ### time
 
