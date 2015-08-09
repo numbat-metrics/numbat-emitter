@@ -14,6 +14,7 @@ var Emitter = module.exports = function Emitter(opts)
 {
 	assert(opts && _.isObject(opts), 'you must pass an options object to the Emitter constructor');
 	assert((opts.host && opts.port) || opts.path || opts.uri, 'you must pass uri, path, or a host/port pair for the collector');
+	if (opts.node && !opts.app) opts.app = opts.node;
 	assert(opts.app && _.isString(opts.app), 'you must pass an `app` option naming this service or app');
 
 	events.EventEmitter.call(this);

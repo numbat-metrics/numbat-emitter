@@ -145,6 +145,18 @@ describe('numbat-emitter', function()
 			done();
 		});
 
+		it('uses a node option as the app option if it must', function()
+		{
+			var emitter = new Emitter(
+			{
+				uri: 'udp://localhost:4334',
+				node: 'node-1'
+			});
+
+			emitter.defaults.must.have.property('app');
+			emitter.defaults.app.must.equal('node-1');
+		});
+
 		it('calls parseURI() when given a uri option', function()
 		{
 			var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
