@@ -9,7 +9,8 @@
   "config": {
     "blanket": {
       "pattern": [
-        "index.js"
+        "index.js",
+        "lib"
       ],
       "data-cover-never": [
         "node_modules",
@@ -49,7 +50,7 @@
     "url": "git://github.com/ceejbot/numbat-emitter.git"
   },
   "scripts": {
-    "lint": "jshint *.js && jscs *.js",
+    "lint": "jshint *.js lib/*.js && jscs *.js lib/*.js",
     "test": "mocha -t 5000 --check-leaks --ui exports --require blanket -R mocoverage test.js",
     "test-cov": "mocha -t 5000 --require blanket -R travis-cov test.js",
     "test-travis": "npm run lint && mocha -R spec -t 5000 test.js && npm run test-cov"
