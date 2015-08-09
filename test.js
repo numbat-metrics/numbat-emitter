@@ -16,13 +16,15 @@ describe('numbat-emitter', function()
 	{
 		host: 'localhost',
 		port: 4333,
-		app: 'node-1'
+		app: 'testapp',
+		node: 'node-1'
 	};
 
 	var mockUDPOpts =
 	{
 		uri: 'udp://localhost:4334',
-		app: 'node-1'
+		app: 'testapp',
+		node: 'node-1'
 	};
 
 	var mockServer, mockUDPServer;
@@ -143,18 +145,6 @@ describe('numbat-emitter', function()
 
 			emitter.destroy();
 			done();
-		});
-
-		it('uses a node option as the app option if it must', function()
-		{
-			var emitter = new Emitter(
-			{
-				uri: 'udp://localhost:4334',
-				node: 'node-1'
-			});
-
-			emitter.defaults.must.have.property('app');
-			emitter.defaults.app.must.equal('node-1');
 		});
 
 		it('calls parseURI() when given a uri option', function()
@@ -287,9 +277,10 @@ describe('numbat-emitter', function()
 				d.must.be.an.object();
 				d.must.have.property('host');
 				d.must.have.property('time');
-				d.must.have.property('app');
-				d.app.must.equal('node-1');
+				d.must.have.property('node');
+				d.node.must.equal('node-1');
 				d.value.must.equal(4);
+				d.name.must.equal('testapp.test');
 				mockServer.removeListener('received', observer);
 				done();
 			}
@@ -329,7 +320,7 @@ describe('numbat-emitter', function()
 				emitter.backlog.must.be.an.array();
 				emitter.backlog.length.must.equal(2);
 				emitter.backlog[0].must.have.property('name');
-				emitter.backlog[0].name.must.equal('test.splort');
+				emitter.backlog[0].name.must.equal('testapp.test.splort');
 
 				done();
 			});
@@ -348,11 +339,11 @@ describe('numbat-emitter', function()
 			{
 				count++;
 				if (count === 1)
-					d.name.must.equal('test.splort');
+					d.name.must.equal('testapp.test.splort');
 
 				if (count === 2)
 				{
-					d.name.must.equal('test.latency');
+					d.name.must.equal('testapp.test.latency');
 					mockServer.removeListener('received', observer);
 					done();
 				}
@@ -379,8 +370,8 @@ describe('numbat-emitter', function()
 			var emitter = new Emitter(mockOpts);
 			emitter.on('ready', function()
 			{
-				emitter.metric({ name: 'test.splort', value: 4 });
-				emitter.metric({ name: 'test.latency', value: 30 });
+				emitter.metric({ name: 'testapp.splort', value: 4 });
+				emitter.metric({ name: 'testapp.latency', value: 30 });
 			});
 
 			var count = 0;
@@ -390,10 +381,10 @@ describe('numbat-emitter', function()
 				switch (count)
 				{
 				case 1:
-					d.name.must.equal('test.splort');
+					d.name.must.equal('testapp.splort');
 					break;
 				case 2:
-					d.name.must.equal('test.latency');
+					d.name.must.equal('testapp.latency');
 					mockServer.removeListener('received', observer);
 					done();
 					break;
