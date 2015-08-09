@@ -11,7 +11,8 @@ var Emitter = require('numbat-emitter');
 
 var emitter = new Emitter({
     uri: 'tcp://localhost:8000',
-    app: 'www-1'
+    app: 'www',
+    node: 'www:8081'
 });
 emitter.metric({ name: 'httpd.latency', value: 30 });
 emitter.metric({ name: 'disk.used.percent', value: 36 });
@@ -24,39 +25,31 @@ See the `examples/` directory for working examples.
 
 The constructor requires an options object with an app name in the `app` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`. Do this in the `uri` field of the options object.
 
+Config options:
+
+| option | description | required? | default |
+|--------|-------------|-----------|---------|
+| uri    | uri of the metrics collector | either this or path | |
+| path   | path to the unix domain socket where the collector is listening | either this or uri ||
+| app    | name of this service or app; meaningful to you | y | |
+| node   | name of this specific app instance |  | |
+| maxretries | number of times to retry connecting before giving up |  | 100 |
+| maxbacklog | max number of metrics to hold in backlog during reconnects | | 1000 |
+
+
 An example:
 
 ```javascript
 {
-    uri:  'udp://localhost:8000', // where numbat-collector is running
-    app: 'udp-emitter',  // name of the app emitting metrics; meaningful to you
-    maxretries: 10, // number of times to retry connecting before giving up
-    maxbacklog: 200, // max number of metrics to hold in backlog during reconnects
+    uri:  'udp://localhost:8000',
+    app: 'udp-emitter',
+    node: 'emitter-1',
+    maxretries: 10,
+    maxbacklog: 200,
 }
 ```
 
-You can also specify the destination more verbosely using `host` and `port` fields:
-
-```javascript
-{
-    host: 'collector.example.com',
-    port: 8000,
-    app: 'tcp-emitter'
-}
-```
-
-If you wish to use udp instead of tcp, pass `udp: true`:
-
-```javascript
-{
-    host: 'localhost',
-    port: 8000,
-    udp:  true,
-    app: 'udp-emitter'
-}
-```
-
-And finally a unix domain socket:
+Or numbat might be listening via a unix domain socket:
 
 ```javascript
 {
