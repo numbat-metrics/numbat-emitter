@@ -23,11 +23,12 @@
     }
   },
   "dependencies": {
-    "json-stream": "~1.0.0",
+    "discard-stream": "^1.0.1",
     "lodash": "~3.10.1",
     "readable-stream": "~2.0.1"
   },
   "devDependencies": {
+    "json-stream": "~1.0.0",
     "blanket": "~1.1.7",
     "jscs": "~2.0.0",
     "jshint": "~2.8.0",
