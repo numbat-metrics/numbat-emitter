@@ -3,6 +3,7 @@
 
 var
 	demand     = require('must'),
+	stream     = require('readable-stream'),
 	dgram      = require('dgram'),
 	net        = require('net'),
 	os         = require('os'),
@@ -306,23 +307,37 @@ describe('numbat-emitter', function()
 			emitter.metric({ name: 'test', value: 4, time: new Date('2014-01-01') });
 		});
 
-		it('accumulates events in a backlog until connected', function(done)
+		it('events are preserved until reconnected', function(done)
 		{
 			this.timeout(5000);
 
 			var emitter = new Emitter(mockOpts);
-
 			emitter.on('close', function()
 			{
 				emitter.metric({ name: 'test.splort', value: 4 });
 				emitter.metric({ name: 'test.latency', value: 30 });
-
-				emitter.backlog.must.be.an.array();
-				emitter.backlog.length.must.equal(2);
-				emitter.backlog[0].must.have.property('name');
-				emitter.backlog[0].name.must.equal('testapp.test.splort');
-
-				done();
+				var ws = new stream.Writable();
+				var acc = [];
+				ws._write = function (chunk, enc, cb)
+				{
+					acc.push(chunk);
+					cb();
+				};
+				ws.once('finish', function ()
+				{
+					var items = Buffer.concat(acc)
+						.toString('utf8')
+						.split('\n')
+						.slice(0, -1)
+						.map(JSON.parse);
+					items.must.be.an.array();
+					items.length.must.equal(2);
+					items[0].must.have.property('name');
+					items[0].name.must.equal('testapp.test.splort');
+					done();
+				});
+				emitter.output.pipe(ws);
+				emitter.input.end()
 			});
 
 			emitter.connect = function() {};
@@ -361,7 +376,7 @@ describe('numbat-emitter', function()
 
 			emitter.on('close', fillBacklog);
 			var orig = emitter.connect.bind(emitter);
-			emitter.connect = function() { setTimeout(orig, 1000); };
+			emitter.connect = function() { setTimeout(orig, 300); };
 			emitter.client.end();
 		});
 
