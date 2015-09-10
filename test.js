@@ -47,14 +47,14 @@ describe('numbat-emitter', function()
 		mockServer.listen(4333, function()
 		{
 			count++;
-			if (count == 2) done();
+			if (count === 2) done();
 		});
 
 		mockUDPServer = dgram.createSocket('udp4');
 		mockUDPServer.on('listening', function()
 		{
 			count++;
-			if (count == 2) done();
+			if (count === 2) done();
 		});
 		mockUDPServer.on('message', function(msg, rinfo)
 		{
@@ -69,10 +69,10 @@ describe('numbat-emitter', function()
 		{
 			var opts = { uri: 'tcp://localhost:5000', app: 'foo'};
 			var result = Emitter.parseURI(opts);
-			opts.host.must.equal('localhost');
-			opts.port.must.equal('5000');
-			opts.must.not.have.property('udp');
-			opts.must.not.have.property('uri');
+			result.host.must.equal('localhost');
+			result.port.must.equal('5000');
+			result.must.not.have.property('udp');
+			result.must.not.have.property('uri');
 			done();
 		});
 
@@ -80,9 +80,9 @@ describe('numbat-emitter', function()
 		{
 			var opts = { uri: 'udp://localhost:5000', app: 'foo'};
 			var result = Emitter.parseURI(opts);
-			opts.host.must.equal('localhost');
-			opts.port.must.equal('5000');
-			opts.udp.must.be.true();
+			result.host.must.equal('localhost');
+			result.port.must.equal('5000');
+			result.udp.must.be.true();
 			done();
 		});
 
@@ -226,7 +226,7 @@ describe('numbat-emitter', function()
 			emitter.on('ready', function()
 			{
 				count++;
-				if (count == 2)
+				if (count === 2)
 				{
 					emitter.destroy();
 					done();
@@ -318,12 +318,12 @@ describe('numbat-emitter', function()
 				emitter.metric({ name: 'test.latency', value: 30 });
 				var ws = new stream.Writable();
 				var acc = [];
-				ws._write = function (chunk, enc, cb)
+				ws._write = function(chunk, enc, cb)
 				{
 					acc.push(chunk);
 					cb();
 				};
-				ws.once('finish', function ()
+				ws.once('finish', function()
 				{
 					var items = Buffer.concat(acc)
 						.toString('utf8')
@@ -337,7 +337,7 @@ describe('numbat-emitter', function()
 					done();
 				});
 				emitter.output.pipe(ws);
-				emitter.input.end()
+				emitter.input.end();
 			});
 
 			emitter.connect = function() {};

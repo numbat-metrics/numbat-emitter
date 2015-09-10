@@ -1,1 +1,1 @@
-var Emitter = module.exports = require('./lib/emitter');
+module.exports = require('./lib/emitter');
