@@ -29,11 +29,11 @@
   },
   "devDependencies": {
     "blanket": "~1.1.7",
-    "eslint": "~1.3.1",
+    "eslint": "~1.7.3",
     "json-stream": "~1.0.0",
-    "mocha": "~2.2.5",
+    "mocha": "~2.3.3",
     "mocoverage": "~1.0.0",
-    "must": "~0.12.0",
+    "must": "~0.13.1",
     "travis-cov": "~0.2.5"
   },
   "homepage": "https://github.com/ceejbot/numbat-emitter",
