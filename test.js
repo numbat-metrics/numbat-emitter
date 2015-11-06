@@ -9,20 +9,18 @@ var
 	os         = require('os'),
 	Emitter    = require('./index'),
 	JSONStream = require('json-stream')
-;
+	;
 
 describe('numbat-emitter', function()
 {
-	var mockOpts =
-	{
+	var mockOpts = {
 		host: 'localhost',
 		port: 4333,
 		app: 'testapp',
 		node: 'node-1'
 	};
 
-	var mockUDPOpts =
-	{
+	var mockUDPOpts = {
 		uri: 'udp://localhost:4334',
 		app: 'testapp',
 		node: 'node-1'

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Emitter = require('./index');
+var Emitter = require('../index');
 
 var emitter = new Emitter({
 	uri:  'tcp://localhost:4677',
