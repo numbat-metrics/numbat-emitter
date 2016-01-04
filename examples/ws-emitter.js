@@ -7,7 +7,9 @@ var emitter = new Emitter({
 	app: 'example-1'
 });
 
-emitter.metric({ name: 'example.start', pid: process.pid });
+emitter.on('ready', function () {
+	emitter.metric({ name: 'example.start', pid: process.pid });	
+});
 
 function heartbeat()
 {
