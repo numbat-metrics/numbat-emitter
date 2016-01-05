@@ -91,6 +91,28 @@ describe('numbat-emitter', function()
 			result.path.must.equal('/tmp/foo.sock');
 		});
 
+		it('parses the ws uri option', function(done)
+		{
+			var opts = { uri: 'ws://localhost:5000', app: 'foo'};
+			var result = Emitter.parseURI(opts);
+			result.url.hostname.must.equal('localhost');
+			result.url.port.must.equal('5000');
+			result.must.not.have.property('udp');
+			result.must.not.have.property('uri');
+			done();
+		});
+
+		it('parses the wss (secure) uri option', function(done)
+		{
+			var opts = { uri: 'wss://localhost:5000', app: 'foo'};
+			var result = Emitter.parseURI(opts);
+			result.url.hostname.must.equal('localhost');
+			result.url.port.must.equal('5000');
+			result.must.not.have.property('udp');
+			result.must.not.have.property('uri');
+			done();
+		});
+
 		it('throws when given an unsupported uri', function()
 		{
 			function shouldThrow() { return Emitter.parseURI({ uri: 'http://example.com', app: 'foo'}); }
