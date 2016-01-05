@@ -3,13 +3,17 @@
 var Emitter = require('../index');
 
 var emitter = new Emitter({
-	uri: 'ws://localhost:3333',
+	uri: 'ws://localhost:3333/?key=foobar',
 	app: 'example-1'
 });
 
 emitter.on('ready', function () {
 	console.log('connected to collector');
-	emitter.metric({ name: 'example.start', pid: process.pid });	
+	emitter.metric({ name: 'example.start', pid: process.pid });
+});
+
+emitter.on('close', function (reason) {
+	console.log(reason);
 });
 
 function heartbeat()
