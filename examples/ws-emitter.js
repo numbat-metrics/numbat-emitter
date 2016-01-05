@@ -8,6 +8,7 @@ var emitter = new Emitter({
 });
 
 emitter.on('ready', function () {
+	console.log('connected to collector');
 	emitter.metric({ name: 'example.start', pid: process.pid });	
 });
 
@@ -32,7 +33,7 @@ var resourcesTimer = setInterval(resources, 30000);
 
 process.on('SIGINT', function()
 {
-	console.log('Shutting down gracefully.');
+	console.log('disconnected from collector');
 	clearInterval(heartbeatTimer);
 	clearInterval(resourcesTimer);
 	emitter.metric({ name: 'shutdown' });

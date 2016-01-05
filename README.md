@@ -23,7 +23,7 @@ See the `examples/` directory for working examples.
 
 ## Configuration
 
-The constructor requires an options object with an app name in the `app` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`. Do this in the `uri` field of the options object.
+The constructor requires an options object with an app name in the `app` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`, `ws://localhost:5000`. Do this in the `uri` field of the options object.
 
 Config options:
 
