@@ -23,7 +23,6 @@ describe('numbat-emitter', function()
 	var mockUDPOpts = {
 		uri: 'udp://localhost:4334',
 		app: 'testapp',
-		node: 'node-1'
 	};
 
 	var mockServer, mockUDPServer;
@@ -267,6 +266,16 @@ describe('numbat-emitter', function()
 			mockServer.on('received', observer);
 			var emitter = new Emitter(mockOpts);
 			emitter.metric({ name: 'test' });
+		});
+
+		it('returns the metric it makes for your curiosity', function()
+		{
+			var emitter = new Emitter(mockUDPOpts);
+			var obj = emitter.metric({ name: 'returnme' });
+			obj.must.be.an.object();
+			obj.name.must.equal('testapp.returnme');
+			obj.must.have.property('host');
+			obj.must.not.have.property('node');
 		});
 
 		it('writes event objects to its socket', function(done)
