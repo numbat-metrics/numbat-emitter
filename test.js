@@ -187,7 +187,7 @@ describe('numbat-emitter', function()
 	{
 		it('calls connect() when constructed', function(done)
 		{
-			var emitter = new Emitter(mockOpts);
+			var emitter = Emitter(mockOpts);
 			emitter.must.have.property('client');
 			emitter.client.on('connect', function()
 			{
