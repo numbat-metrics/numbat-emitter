@@ -17,6 +17,11 @@ var emitter = new Emitter({
 emitter.metric({ name: 'httpd.latency', value: 30 });
 emitter.metric({ name: 'disk.used.percent', value: 36 });
 emitter.metric({ name: 'heartbeat'});
+
+
+// if you don't have a reference to an emitter, you
+// can broadcast a metric to all extant emitters:
+process.emit('metric', { name: 'heartbeat' });
 ```
 
 See the `examples/` directory for working examples.
