@@ -4,7 +4,7 @@
   "version": "2.3.1",
   "author": "C J Silverio <ceejceej@gmail.com>",
   "bugs": {
-    "url": "https://github.com/ceejbot/numbat-emitter/issues"
+    "url": "https://github.com/numbat-metrics/numbat-emitter/issues"
   },
   "dependencies": {
     "discard-stream": "^1.0.1",
@@ -19,7 +19,7 @@
     "must": "~0.13.1",
     "nyc": "~5.5.0"
   },
-  "homepage": "https://github.com/ceejbot/numbat-emitter",
+  "homepage": "https://github.com/numbat-metrics/numbat-emitter",
   "keywords": [
     "influxdb",
     "metrics",
@@ -30,7 +30,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ceejbot/numbat-emitter.git"
+    "url": "git://github.com/numbat-metrics/numbat-emitter.git"
   },
   "scripts": {
     "coverage": "nyc check-coverage --lines 90 --functions 70 --branches 85",
