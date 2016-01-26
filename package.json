@@ -6,22 +6,6 @@
   "bugs": {
     "url": "https://github.com/ceejbot/numbat-emitter/issues"
   },
-  "config": {
-    "blanket": {
-      "pattern": [
-        "index.js",
-        "lib"
-      ],
-      "data-cover-never": [
-        "node_modules",
-        "test.js"
-      ],
-      "output-reporter": "spec",
-      "travis-cov": {
-        "threshold": 99
-      }
-    }
-  },
   "dependencies": {
     "discard-stream": "^1.0.1",
     "lodash": "~4.0.0",
@@ -29,13 +13,11 @@
     "ws": "1.0.1"
   },
   "devDependencies": {
-    "blanket": "~1.2.1",
     "eslint": "~1.10.3",
     "json-stream": "~1.0.0",
     "mocha": "~2.3.4",
-    "mocoverage": "~1.0.0",
     "must": "~0.13.1",
-    "travis-cov": "~0.2.5"
+    "nyc": "~5.5.0"
   },
   "homepage": "https://github.com/ceejbot/numbat-emitter",
   "keywords": [
@@ -51,9 +33,9 @@
     "url": "git://github.com/ceejbot/numbat-emitter.git"
   },
   "scripts": {
+    "coverage": "nyc check-coverage --lines 90 --functions 70 --branches 85",
     "lint": "eslint *.js lib/*.js",
-    "test": "mocha -t 5000 --check-leaks --ui exports --require blanket -R mocoverage test.js",
-    "test-cov": "mocha -t 5000 --require blanket -R travis-cov test.js",
-    "test-travis": "npm run lint && mocha -R spec -t 5000 test.js && npm run test-cov"
+    "test": "nyc mocha -t 5000 --check-leaks --ui exports -R spec test.js",
+    "travis": "npm run lint && npm test && npm run coverage"
   }
 }
