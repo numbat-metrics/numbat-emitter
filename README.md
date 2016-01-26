@@ -1,8 +1,8 @@
 # numbat-emitter
 
-[Numbat](http://www.arkive.org/numbat/myrmecobius-fasciatus/)-powered metrics emitter. See [numbat-collector](https://github.com/ceejbot/numbat-collector) for the matching metrics collector.
+[Numbat](http://www.arkive.org/numbat/myrmecobius-fasciatus/)-powered metrics emitter. See [numbat-collector](https://github.com/numbat-metrics/numbat-collector) for the matching metrics collector.
 
-[![on npm](http://img.shields.io/npm/v/numbat-emitter.svg?style=flat)](https://www.npmjs.org/package/numbat-emitter)  [![Tests](http://img.shields.io/travis/ceejbot/numbat-emitter.svg?style=flat)](http://travis-ci.org/ceejbot/numbat-emitter) ![Coverage](http://img.shields.io/badge/coverage-100%25-green.svg?style=flat) [![Dependencies](http://img.shields.io/david/ceejbot/numbat-emitter.svg?style=flat)](https://david-dm.org/ceejbot/numbat-emitter)
+[![on npm](http://img.shields.io/npm/v/numbat-emitter.svg?style=flat)](https://www.npmjs.org/package/numbat-emitter)  [![Tests](http://img.shields.io/travis/numbat-metrics/numbat-emitter.svg?style=flat)](http://travis-ci.org/numbat-metrics/numbat-emitter) ![Coverage](http://img.shields.io/badge/coverage-100%25-green.svg?style=flat) [![Dependencies](http://img.shields.io/david/numbat-metrics/numbat-emitter.svg?style=flat)](https://david-dm.org/numbat-metrics/numbat-emitter)
 
 ## Example
 
@@ -130,7 +130,7 @@ var e3 = { name: 'heartbeat', ttl: 30000 };
 
 ## Contributing
 
-Sure! Write tests with [Lab](https://www.npmjs.org/package/lab) & [must](https://www.npmjs.org/package/must). Use BSD/Allman bracing or I will stare at you funny and not take your pull request.
+Sure!
 
 ## License
 
