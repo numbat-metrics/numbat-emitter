@@ -130,7 +130,7 @@ var e3 = { name: 'heartbeat', ttl: 30000 };
 
 ## Contributing
 
-Sure!
+Yes, please do! See our [contributing guide](https://github.com/numbat-metrics/documentation/blob/master/contributing.md) for basic rules of engagement.
 
 ## License
 

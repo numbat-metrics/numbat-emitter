@@ -480,7 +480,6 @@ describe('numbat-emitter', function()
 		});
 	});
 
-
 	describe('process.emit("metric")', function()
 	{
 		it('calls metric() on all extant emitters', function(done)
@@ -488,10 +487,10 @@ describe('numbat-emitter', function()
 			var emitter = new Emitter(mockUDPOpts);
 			var expect = {name: 'example'};
 			var seen = null;
-			emitter.metric = function (xs)
+			emitter.metric = function(xs)
 			{
-				seen = xs
-			}
+				seen = xs;
+			};
 			process.emit('metric', expect);
 			demand(seen).equal(expect);
 			done();
@@ -503,11 +502,11 @@ describe('numbat-emitter', function()
 			var emitter2 = new Emitter(mockUDPOpts);
 			var expect = {name: 'example'};
 			var seen = null;
-			emitter.metric = function (xs)
+			emitter.metric = function(xs)
 			{
-				seen = xs
+				seen = xs;
 			};
-			emitter2.metric = function ()
+			emitter2.metric = function()
 			{
 				throw new Error('should not reach this point');
 			};
@@ -523,19 +522,19 @@ describe('numbat-emitter', function()
 			var emitter2 = new Emitter(mockOpts);
 			var expect = {name: 'example'};
 			var seen = null;
-			emitter.metric = function (xs)
+			emitter.metric = function(xs)
 			{
-				seen = xs
+				seen = xs;
 			};
-			emitter2.metric = function ()
+			emitter2.metric = function()
 			{
 				throw new Error('should not reach this point');
 			};
 			emitter2.connect();
-			emitter2.on('ready', function ()
+			emitter2.on('ready', function()
 			{
 				emitter2.client.destroy();
-				emitter2.on('close', function ()
+				emitter2.on('close', function()
 				{
 					process.emit('metric', expect);
 					demand(seen).equal(expect);
@@ -550,19 +549,19 @@ describe('numbat-emitter', function()
 			var emitter2 = new Emitter(mockOpts);
 			var expect = {name: 'example'};
 			var seen = null;
-			emitter.metric = function (xs)
+			emitter.metric = function(xs)
 			{
-				seen = xs
+				seen = xs;
 			};
-			emitter2.metric = function ()
+			emitter2.metric = function()
 			{
 				throw new Error('should not reach this point');
 			};
 			emitter2.connect();
-			emitter2.on('ready', function ()
+			emitter2.on('ready', function()
 			{
 				emitter2.client.destroy();
-				emitter2.on('close', function ()
+				emitter2.on('close', function()
 				{
 					emitter2.destroy();
 					process.emit('metric', expect);
