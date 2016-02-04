@@ -12,7 +12,7 @@ var
 	os                  = require('os')
 	;
 
-var emitters = [];
+var globalEmitter = false;
 
 var Emitter = module.exports = function Emitter(opts)
 {
@@ -26,7 +26,6 @@ var Emitter = module.exports = function Emitter(opts)
 	if (opts.uri) Emitter.parseURI(opts);
 	if (opts.maxretries) this.maxretries = opts.maxretries;
 	if (opts.maxbacklog) this.maxbacklog = opts.maxbacklog;
-	if (emitters.indexOf(this) === -1) emitters.push(this);
 
 	this.options = opts;
 	this.defaults = { host: os.hostname() };
@@ -52,6 +51,11 @@ Object.defineProperty(Emitter.prototype, 'backlog', {
 		return this.input.backlog;
 	}
 });
+
+Emitter.setGlobalEmitter = function(emitter)
+{
+	globalEmitter = emitter;
+}
 
 Emitter.parseURI = function(options)
 {
@@ -118,8 +122,8 @@ Emitter.prototype.connect = function connect()
 Emitter.prototype.destroy = function destroy()
 {
 	this.destroyed = true;
-	var idx = emitters.indexOf(this);
-	if (idx !== -1) { emitters.splice(idx, 1); }
+        if(globalEmitter === this) globalEmitter = false;
+
 	if (!this.client) return;
 	this.output.unpipe();
 	this.client.removeAllListeners();
@@ -143,8 +147,7 @@ Emitter.prototype.onClose = function onClose(reason)
 {
 	this.ready = false;
 	this.retries++;
-	var idx = emitters.indexOf(this);
-	if (idx !== -1) { emitters.splice(idx, 1); }
+        if(globalEmitter === this) globalEmitter = false;
 	if (this.retries <= this.maxretries)
 	{
 		var t = setTimeout(this.connect.bind(this), this.nextBackoff());
@@ -189,8 +192,5 @@ process.on('metric', onmetric);
 
 function onmetric(metric)
 {
-	for (var i = 0; i < emitters.length; ++i)
-	{
-		emitters[i].metric(metric);
-	}
+	if(globalEmitter) globalEmitter.metric(metric)
 }
