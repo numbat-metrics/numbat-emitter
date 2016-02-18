@@ -485,7 +485,7 @@ describe('numbat-emitter', function()
 		it('calls metric() on global emitter', function(done)
 		{
 			var emitter = new Emitter(mockUDPOpts);
-                        Emitter.setGlobalEmitter(emitter);
+			Emitter.setGlobalEmitter(emitter);
 
 			var expect = {name: 'example'};
 			var seen = null;
@@ -503,7 +503,7 @@ describe('numbat-emitter', function()
 
 			var expect = {name: 'example'};
 			var emitter = new Emitter(mockUDPOpts);
-                        Emitter.setGlobalEmitter(emitter);
+			Emitter.setGlobalEmitter(emitter);
 
 			emitter.metric = function()
 			{
@@ -518,7 +518,7 @@ describe('numbat-emitter', function()
 		{
 			var emitter = new Emitter(mockOpts);
 			var expect = {name: 'example'};
-                        Emitter.setGlobalEmitter(emitter);
+			Emitter.setGlobalEmitter(emitter);
 			emitter.metric = function()
 			{
 				throw new Error('should not reach this point');

@@ -55,7 +55,7 @@ Object.defineProperty(Emitter.prototype, 'backlog', {
 Emitter.setGlobalEmitter = function(emitter)
 {
 	globalEmitter = emitter;
-}
+};
 
 Emitter.parseURI = function(options)
 {
@@ -122,7 +122,7 @@ Emitter.prototype.connect = function connect()
 Emitter.prototype.destroy = function destroy()
 {
 	this.destroyed = true;
-        if(globalEmitter === this) globalEmitter = false;
+	if (globalEmitter === this) globalEmitter = false;
 
 	if (!this.client) return;
 	this.output.unpipe();
@@ -147,7 +147,7 @@ Emitter.prototype.onClose = function onClose(reason)
 {
 	this.ready = false;
 	this.retries++;
-        if(globalEmitter === this) globalEmitter = false;
+	if (globalEmitter === this) globalEmitter = false;
 	if (this.retries <= this.maxretries)
 	{
 		var t = setTimeout(this.connect.bind(this), this.nextBackoff());
@@ -192,5 +192,5 @@ process.on('metric', onmetric);
 
 function onmetric(metric)
 {
-	if(globalEmitter) globalEmitter.metric(metric)
+	if (globalEmitter) globalEmitter.metric(metric);
 }
