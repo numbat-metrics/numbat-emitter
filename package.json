@@ -13,11 +13,11 @@
     "ws": "1.0.1"
   },
   "devDependencies": {
-    "eslint": "~2.1.0",
-    "json-stream": "~1.0.0",
-    "mocha": "~2.4.5",
+    "eslint": "2.*",
+    "json-stream": "1.*",
+    "mocha": "2.*",
     "must": "~0.13.1",
-    "nyc": "~5.6.0"
+    "nyc": "5.*"
   },
   "homepage": "https://github.com/numbat-metrics/numbat-emitter",
   "keywords": [
