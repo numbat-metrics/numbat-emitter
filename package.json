@@ -13,9 +13,9 @@
     "ws": "1.0.1"
   },
   "devDependencies": {
-    "eslint": "2.*",
+    "eslint": "~2.11.1",
     "json-stream": "1.*",
-    "mocha": "2.*",
+    "mocha": "~2.5.3",
     "must": "~0.13.1",
     "nyc": "6.4.4"
   },
