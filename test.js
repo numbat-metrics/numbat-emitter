@@ -181,6 +181,21 @@ describe('numbat-emitter', function()
 			e.defaults.must.have.property('host');
 			e.defaults.host.must.equal(os.hostname());
 		});
+
+		it('has some global emitter functions and stuff', function()
+		{
+			Emitter.must.have.property('setGlobalEmitter');
+			Emitter.setGlobalEmitter.must.be.a.function();
+			Emitter.must.have.property('getGlobalEmitter');
+			Emitter.getGlobalEmitter.must.be.a.function();
+
+			var first = Emitter.getGlobalEmitter();
+			demand(first).be.falsy();
+			var emitter = new Emitter(mockUDPOpts);
+			Emitter.setGlobalEmitter(emitter);
+			Emitter.getGlobalEmitter().must.equal(emitter);
+			Emitter.setGlobalEmitter();
+		});
 	});
 
 	describe('connections', function()
