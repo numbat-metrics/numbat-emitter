@@ -52,9 +52,14 @@ Object.defineProperty(Emitter.prototype, 'backlog', {
 	}
 });
 
-Emitter.setGlobalEmitter = function(emitter)
+Emitter.setGlobalEmitter = function setGlobalEmitter(emitter)
 {
 	globalEmitter = emitter;
+};
+
+Emitter.getGlobalEmitter = function getGlobalEmitter()
+{
+	return globalEmitter;
 };
 
 Emitter.parseURI = function(options)
