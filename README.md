@@ -40,6 +40,7 @@ Config options:
 | node   | name of this specific app instance |  | |
 | maxretries | number of times to retry connecting before giving up |  | 100 |
 | maxbacklog | max number of metrics to hold in backlog during reconnects | | 1000 |
+| shouldUnref | should numbat avoid holding the process open if its the only active conn? | | true |
 
 
 An example:

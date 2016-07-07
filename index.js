@@ -26,6 +26,7 @@ var Emitter = module.exports = function Emitter(opts)
 	if (opts.uri) Emitter.parseURI(opts);
 	if (opts.maxretries) this.maxretries = opts.maxretries;
 	if (opts.maxbacklog) this.maxbacklog = opts.maxbacklog;
+	if ('shouldUnref' in opts) this.shouldUnref = opts.shouldUnref;
 
 	this.options = opts;
 	this.defaults = { host: os.hostname() };
@@ -38,12 +39,13 @@ var Emitter = module.exports = function Emitter(opts)
 };
 util.inherits(Emitter, events.EventEmitter);
 
-Emitter.prototype.defaults   = null;
-Emitter.prototype.client     = null;
-Emitter.prototype.ready      = false;
-Emitter.prototype.retries    = 0;
-Emitter.prototype.maxretries = 100;
-Emitter.prototype.maxbacklog = 1000;
+Emitter.prototype.defaults    = null;
+Emitter.prototype.client      = null;
+Emitter.prototype.ready       = false;
+Emitter.prototype.retries     = 0;
+Emitter.prototype.maxretries  = 100;
+Emitter.prototype.maxbacklog  = 1000;
+Emitter.prototype.shouldUnref = true;
 
 Object.defineProperty(Emitter.prototype, 'backlog', {
 	get: function()
@@ -121,7 +123,10 @@ Emitter.prototype.connect = function connect()
 	this.client.on('connect', this.onConnect.bind(this));
 	this.client.on('error', this.onError.bind(this));
 	this.client.on('close', this.onClose.bind(this));
-	if (this.client.unref) this.client.unref();
+	if (this.shouldUnref && this.client.unref)
+	{
+		this.client.unref();
+	}
 };
 
 Emitter.prototype.destroy = function destroy()
