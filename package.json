@@ -15,7 +15,7 @@
   "devDependencies": {
     "eslint": "~3.0.0",
     "json-stream": "1.*",
-    "mocha": "~2.5.3",
+    "mocha": "~3.0.0",
     "must": "~0.13.1",
     "nyc": "6.6.1"
   },
