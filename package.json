@@ -8,16 +8,16 @@
   },
   "dependencies": {
     "discard-stream": "^1.0.1",
-    "lodash": "~4.13.1",
-    "readable-stream": "~2.1.4",
+    "lodash": "~4.16.2",
+    "readable-stream": "~2.1.5",
     "ws": "~1.1.1"
   },
   "devDependencies": {
-    "eslint": "~3.0.0",
+    "eslint": "~3.6.1",
     "json-stream": "1.*",
-    "mocha": "~2.5.3",
-    "must": "~0.13.1",
-    "nyc": "6.6.1"
+    "mocha": "~3.1.0",
+    "must": "~0.13.2",
+    "nyc": "~8.3.0"
   },
   "homepage": "https://github.com/numbat-metrics/numbat-emitter",
   "keywords": [
@@ -33,9 +33,9 @@
     "url": "git://github.com/numbat-metrics/numbat-emitter.git"
   },
   "scripts": {
-    "coverage": "nyc check-coverage --lines 90 --functions 70 --branches 85",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint *.js lib/*.js",
     "test": "nyc mocha -t 5000 --check-leaks --ui exports -R spec test.js",
-    "travis": "npm run lint && npm test && npm run coverage"
+    "travis": "npm run lint && npm test"
   }
 }
