@@ -13,6 +13,7 @@
     "ws": "~1.1.1"
   },
   "devDependencies": {
+    "coveralls": "~2.11.14",
     "eslint": "~3.6.1",
     "json-stream": "1.*",
     "mocha": "~3.1.0",
