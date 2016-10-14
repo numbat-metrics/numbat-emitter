@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "coveralls": "~2.11.14",
-    "eslint": "~3.6.1",
+    "eslint": "~3.8.0",
     "json-stream": "1.*",
     "mocha": "~3.1.0",
     "must": "~0.13.2",
