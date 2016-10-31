@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "discard-stream": "^1.0.1",
-    "lodash": "~4.16.2",
+    "lodash": "~4.16.5",
     "readable-stream": "~2.1.5",
     "ws": "~1.1.1"
   },
