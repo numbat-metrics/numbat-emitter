@@ -7,12 +7,14 @@ var emitter = new Emitter({
 	app: 'example-1'
 });
 
-emitter.on('ready', function () {
+emitter.on('ready', function handleReady()
+{
 	console.log('connected to collector');
 	emitter.metric({ name: 'example.start', pid: process.pid });
 });
 
-emitter.on('close', function (reason) {
+emitter.on('close', function handleClose(reason)
+{
 	console.log(reason);
 });
 

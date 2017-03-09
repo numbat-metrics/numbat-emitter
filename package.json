@@ -7,18 +7,20 @@
     "url": "https://github.com/numbat-metrics/numbat-emitter/issues"
   },
   "dependencies": {
+    "coveralls": "~2.12.0",
     "discard-stream": "^1.0.1",
-    "lodash": "~4.16.2",
-    "readable-stream": "~2.1.5",
-    "ws": "~1.1.1"
+    "lodash": "~4.17.4",
+    "readable-stream": "~2.2.3",
+    "ws": "~2.2.0"
   },
   "devDependencies": {
     "coveralls": "~2.11.14",
-    "eslint": "~3.9.1",
+    "eslint-config-ceejbot": "~1.0.3",
     "json-stream": "1.*",
-    "mocha": "~3.1.0",
-    "must": "~0.13.2",
-    "nyc": "~8.4.0"
+    "mocha": "~3.2.0",
+    "must": "~0.13.4",
+    "nyc": "~10.1.2",
+    "xo": "~0.17.1"
   },
   "homepage": "https://github.com/numbat-metrics/numbat-emitter",
   "keywords": [
@@ -35,8 +37,11 @@
   },
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "lint": "eslint *.js lib/*.js",
+    "lint": "xo",
     "test": "nyc mocha -t 5000 --check-leaks --ui exports -R spec test.js",
     "travis": "npm run lint && npm test"
-  }
+    },
+    "xo": {
+      "extends": "eslint-config-ceejbot"
+    }
 }
