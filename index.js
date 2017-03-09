@@ -1,15 +1,16 @@
 var
-	discard             = require('discard-stream'),
-	UDPStream           = require('./lib/udp-stream'),
-	WSStream            = require('./lib/ws-stream'),
-	JSONStringifyStream = require('./lib/json-stringify-stream'),
 	_                   = require('lodash'),
-	events              = require('events'),
 	assert              = require('assert'),
-	util                = require('util'),
-	url                 = require('url'),
+	discard             = require('discard-stream'),
+	events              = require('events'),
+	JSONStringifyStream = require('./lib/json-stringify-stream'),
 	net                 = require('net'),
-	os                  = require('os')
+	NSQStream           = require('./lib/nsq-stream'),
+	os                  = require('os'),
+	UDPStream           = require('./lib/udp-stream'),
+	url                 = require('url'),
+	util                = require('util'),
+	WSStream            = require('./lib/ws-stream')
 	;
 
 var globalEmitter = false;
@@ -21,9 +22,8 @@ var Emitter = module.exports = function Emitter(opts)
 	assert(opts.path || opts.uri, 'you must pass an output uri or a socket path to specify metrics destinationr');
 
 	events.EventEmitter.call(this);
-	this.options = Object.assign({}, opts);
+	this.options = Emitter.parseURI(opts);
 
-	if (opts.uri) Emitter.parseURI(this.options);
 	if (opts.maxretries) this.maxretries = opts.maxretries;
 	if (opts.maxbacklog) this.maxbacklog = opts.maxbacklog;
 	if ('shouldUnref' in opts) this.shouldUnref = opts.shouldUnref;
@@ -60,8 +60,9 @@ Emitter.getGlobalEmitter = function getGlobalEmitter()
 	return globalEmitter;
 };
 
-Emitter.parseURI = function(options)
+Emitter.parseURI = function(opts)
 {
+	const options = Object.assign({}, opts);
 	var parsed = url.parse(options.uri);
 
 	switch (parsed.protocol)
@@ -88,11 +89,13 @@ Emitter.parseURI = function(options)
 		options.port = parsed.port;
 		break;
 
+	case 'nsq':
+		break;
+
 	default:
 		throw (new Error('unsupported destination uri: ' + options.uri));
 	}
 
-	delete options.uri;
 	return options;
 };
 
@@ -112,6 +115,8 @@ Emitter.prototype.connect = function connect()
 		this.client = new UDPStream(this.options);
 	else if (this.options.ws)
 		this.client = new WSStream(this.options);
+	else if (this.options.nqs)
+		this.client = new NSQStream(this.options);
 	else
 		this.client = net.connect(this.options);
 

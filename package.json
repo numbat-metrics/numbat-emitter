@@ -11,6 +11,7 @@
     "discard-stream": "^1.0.1",
     "lodash": "~4.17.4",
     "readable-stream": "~2.2.3",
+    "request": "~2.80.0",
     "ws": "~2.2.0"
   },
   "devDependencies": {
@@ -40,8 +41,8 @@
     "lint": "xo",
     "test": "nyc mocha -t 5000 --check-leaks --ui exports -R spec test.js",
     "travis": "npm run lint && npm test"
-    },
-    "xo": {
-      "extends": "eslint-config-ceejbot"
-    }
+  },
+  "xo": {
+    "extends": "eslint-config-ceejbot"
+  }
 }
