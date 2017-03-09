@@ -18,20 +18,19 @@ var Emitter = module.exports = function Emitter(opts)
 {
 	if (this.constructor !== Emitter) return new Emitter(opts);
 	assert(opts && _.isObject(opts), 'you must pass an options object to the Emitter constructor');
-	assert((opts.host && opts.port) || opts.path || opts.uri, 'you must pass uri, path, or a host/port pair for the collector');
-	assert(opts.app && _.isString(opts.app), 'you must pass an `app` option naming this service or app');
+	assert(opts.path || opts.uri, 'you must pass an output uri or a socket path to specify metrics destinationr');
 
 	events.EventEmitter.call(this);
+	this.options = Object.assign({}, opts);
 
-	if (opts.uri) Emitter.parseURI(opts);
+	if (opts.uri) Emitter.parseURI(this.options);
 	if (opts.maxretries) this.maxretries = opts.maxretries;
 	if (opts.maxbacklog) this.maxbacklog = opts.maxbacklog;
 	if ('shouldUnref' in opts) this.shouldUnref = opts.shouldUnref;
 
-	this.options = opts;
 	this.defaults = { host: os.hostname() };
 	if (opts.node) this.defaults.node = opts.node;
-	this.app = opts.app;
+	this.app = opts.app || 'numbat';
 	this.input = discard({objectMode: true, maxBacklog: opts.maxbacklog});
 	this.output = JSONStringifyStream({ highWaterMark: opts.maxbacklog });
 	this.input.pipe(this.output);
@@ -48,10 +47,7 @@ Emitter.prototype.maxbacklog  = 1000;
 Emitter.prototype.shouldUnref = true;
 
 Object.defineProperty(Emitter.prototype, 'backlog', {
-	get: function()
-	{
-		return this.input.backlog;
-	}
+	get: function backlogGetter() { return this.input.backlog; }
 });
 
 Emitter.setGlobalEmitter = function setGlobalEmitter(emitter)

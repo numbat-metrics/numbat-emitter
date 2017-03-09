@@ -14,8 +14,7 @@ var
 describe('numbat-emitter', function()
 {
 	var mockOpts = {
-		host: 'localhost',
-		port: 4333,
+		uri: 'tcp://localhost:4333',
 		app: 'testapp',
 		node: 'node-1'
 	};
@@ -128,24 +127,11 @@ describe('numbat-emitter', function()
 			done();
 		});
 
-		it('requires a host & port option', function(done)
+		it('requires at least one of path or uri', function(done)
 		{
-			function shouldThrow() { return new Emitter({ host: 'example.com' }); }
-			shouldThrow.must.throw(/host/);
+			function shouldThrow() { return new Emitter({ }); }
+			shouldThrow.must.throw(/output uri or/);
 			done();
-		});
-
-		it('requires a path option otherwise', function(done)
-		{
-			function shouldThrow() { return new Emitter({ path: '/tmp/numbat.sock' }); }
-			shouldThrow.must.throw(/app/);
-			done();
-		});
-
-		it('requires an app name option', function()
-		{
-			function shouldThrow() { return new Emitter({ host: 'localhost', port: 4000 }); }
-			shouldThrow.must.throw(/app/);
 		});
 
 		it('can be constructed', function(done)
@@ -155,7 +141,8 @@ describe('numbat-emitter', function()
 
 			emitter.must.have.property('options');
 			emitter.options.must.be.an.object();
-			emitter.options.must.equal(mockOpts);
+			emitter.options.host.must.equal('localhost');
+			emitter.options.port.must.equal('4333');
 
 			emitter.must.have.property('defaults');
 			emitter.defaults.must.be.an.object();
@@ -173,6 +160,13 @@ describe('numbat-emitter', function()
 			e.must.have.property('options');
 			e.options.must.not.have.property('uri');
 			e.options.must.have.property('path');
+		});
+
+		it('defaults `app` to `numbat`', function()
+		{
+			var e = new Emitter({ uri: 'sock:/tmp/foobar.sock' });
+			e.must.have.property('app');
+			e.app.must.equal('numbat');
 		});
 
 		it('adds the host name to its default fields', function()
