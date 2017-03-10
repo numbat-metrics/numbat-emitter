@@ -22,7 +22,9 @@ var Emitter = module.exports = function Emitter(opts)
 	assert(opts.path || opts.uri, 'you must pass an output uri or a socket path to specify metrics destinationr');
 
 	events.EventEmitter.call(this);
-	this.options = Emitter.parseURI(opts);
+
+	const options = Object.assign({}, opts);
+	this.options = options;
 
 	if (opts.maxretries) this.maxretries = opts.maxretries;
 	if (opts.maxbacklog) this.maxbacklog = opts.maxbacklog;
@@ -60,43 +62,46 @@ Emitter.getGlobalEmitter = function getGlobalEmitter()
 	return globalEmitter;
 };
 
-Emitter.parseURI = function(opts)
+Emitter.prototype.createClient = function createClient()
 {
-	const options = Object.assign({}, opts);
-	var parsed = url.parse(options.uri);
+	const parsed = url.parse(this.options.uri);
 
 	switch (parsed.protocol)
 	{
 	case 'udp:':
-		options.udp = true;
-		options.host = parsed.hostname;
-		options.port = parsed.port;
+		this.options.host = parsed.hostname;
+		this.options.port = parsed.port;
+		this.client = new UDPStream(this.options);
 		break;
 
 	case 'sock:':
 	case 'socket:':
-		options.path = parsed.pathname;
+		this.options.path = parsed.pathname;
+		this.client = net.connect(this.options);
 		break;
 
 	case 'ws:':
 	case 'wss:':
-		options.ws = true;
-		options.url = parsed;
+		this.options.ws = true;
+		this.options.url = parsed;
+		this.client = new WSStream(this.options);
 		break;
 
 	case 'tcp:':
-		options.host = parsed.hostname;
-		options.port = parsed.port;
+		this.options.host = parsed.hostname;
+		this.options.port = parsed.port;
+		this.client = net.connect(this.options);
 		break;
 
-	case 'nsq':
+	case 'nsq:':
+	case 'nsqd:':
+		this.options.parsed = parsed;
+		this.client = new NSQStream(this.options);
 		break;
 
 	default:
-		throw (new Error('unsupported destination uri: ' + options.uri));
+		throw (new Error('unsupported destination uri: ' + this.options.uri));
 	}
-
-	return options;
 };
 
 Emitter.prototype.connect = function connect()
@@ -111,14 +116,7 @@ Emitter.prototype.connect = function connect()
 		this.client = null;
 	}
 
-	if (this.options.udp)
-		this.client = new UDPStream(this.options);
-	else if (this.options.ws)
-		this.client = new WSStream(this.options);
-	else if (this.options.nqs)
-		this.client = new NSQStream(this.options);
-	else
-		this.client = net.connect(this.options);
+	this.createClient();
 
 	this.output.pipe(this.client);
 	this.client.on('connect', this.onConnect.bind(this));
