@@ -39,7 +39,7 @@
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "xo",
-    "test": "nyc mocha -t 5000 --check-leaks --ui exports -R spec test.js",
+    "test": "nyc mocha -t 5000 --check-leaks -R spec test/",
     "travis": "npm run lint && npm test"
   },
   "xo": {
