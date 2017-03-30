@@ -7,7 +7,7 @@
     "url": "https://github.com/numbat-metrics/numbat-emitter/issues"
   },
   "dependencies": {
-    "coveralls": "~2.12.0",
+    "coveralls": "~2.13.0",
     "discard-stream": "^1.0.1",
     "lodash": "~4.17.4",
     "readable-stream": "~2.2.3",
