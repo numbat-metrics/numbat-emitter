@@ -19,7 +19,8 @@ emitter.metric({ name: 'disk.used.percent', value: 36 });
 emitter.metric({ name: 'heartbeat'});
 
 // if you don't have a reference to an emitter, you
-// can broadcast a metric to all extant emitters:
+// can broadcast a metric to a global emitter:
+Emitter.setGlobalEmitter(emitter);
 process.emit('metric', { name: 'heartbeat' });
 ```
 
@@ -27,7 +28,7 @@ See the `examples/` directory for working examples.
 
 ## Configuration
 
-The constructor requires an options object with an app name in the `app` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`, `ws://localhost:5000`. Do this in the `uri` field of the options object.
+The constructor requires an options object with an app name in the `app` field and some manner of specifying where to emit the metrics. You can specify the protocol, host, and port in handy url-parseable format: `tcp://collector.example.com:5000`, `udp://localhost:5000`, `socket:/tmp/foozle.sock`, `ws://localhost:5000`, `nsq://nsqd.example.com:4151` Do this in the `uri` field of the options object.
 
 Config options:
 
@@ -62,6 +63,8 @@ Or numbat might be listening via a unix domain socket:
     app: 'socket-emitter'
 }
 ```
+
+For complete working emitters, see the [examples directory](examples/).
 
 ## Events
 

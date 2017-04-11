@@ -39,11 +39,11 @@ describe('nsq output', function()
 		emitter.connect();
 	});
 
-	it('writes event objects to its socket over udp', function(done)
+	it('writes event objects by posting to http', function(done)
 	{
 		server.once('metric', function handleIncoming(req)
 		{
-			req.url.must.equal('/put?topic=numbat');
+			req.url.must.equal('/pub?topic=numbat');
 			done();
 		});
 

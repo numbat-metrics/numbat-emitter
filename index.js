@@ -49,7 +49,7 @@ Emitter.prototype.maxbacklog  = 1000;
 Emitter.prototype.shouldUnref = true;
 
 Object.defineProperty(Emitter.prototype, 'backlog', {
-	get: function backlogGetter() { return this.input.backlog; }
+	get: function get() { return this.input.backlog; }
 });
 
 Emitter.setGlobalEmitter = function setGlobalEmitter(emitter)
