@@ -1,15 +1,16 @@
 var
-	discard             = require('discard-stream'),
-	UDPStream           = require('./lib/udp-stream'),
-	WSStream            = require('./lib/ws-stream'),
-	JSONStringifyStream = require('./lib/json-stringify-stream'),
 	_                   = require('lodash'),
-	events              = require('events'),
 	assert              = require('assert'),
-	util                = require('util'),
-	url                 = require('url'),
+	discard             = require('discard-stream'),
+	events              = require('events'),
+	JSONStringifyStream = require('./lib/json-stringify-stream'),
 	net                 = require('net'),
-	os                  = require('os')
+	NSQStream           = require('./lib/nsq-stream'),
+	os                  = require('os'),
+	UDPStream           = require('./lib/udp-stream'),
+	url                 = require('url'),
+	util                = require('util'),
+	WSStream            = require('./lib/ws-stream')
 	;
 
 var globalEmitter = false;
@@ -18,20 +19,20 @@ var Emitter = module.exports = function Emitter(opts)
 {
 	if (this.constructor !== Emitter) return new Emitter(opts);
 	assert(opts && _.isObject(opts), 'you must pass an options object to the Emitter constructor');
-	assert((opts.host && opts.port) || opts.path || opts.uri, 'you must pass uri, path, or a host/port pair for the collector');
-	assert(opts.app && _.isString(opts.app), 'you must pass an `app` option naming this service or app');
+	assert(opts.path || opts.uri, 'you must pass an output uri or a socket path to specify metrics destinationr');
 
 	events.EventEmitter.call(this);
 
-	if (opts.uri) Emitter.parseURI(opts);
+	const options = Object.assign({}, opts);
+	this.options = options;
+
 	if (opts.maxretries) this.maxretries = opts.maxretries;
 	if (opts.maxbacklog) this.maxbacklog = opts.maxbacklog;
 	if ('shouldUnref' in opts) this.shouldUnref = opts.shouldUnref;
 
-	this.options = opts;
 	this.defaults = { host: os.hostname() };
 	if (opts.node) this.defaults.node = opts.node;
-	this.app = opts.app;
+	this.app = opts.app || 'numbat';
 	this.input = discard({objectMode: true, maxBacklog: opts.maxbacklog});
 	this.output = JSONStringifyStream({ highWaterMark: opts.maxbacklog });
 	this.input.pipe(this.output);
@@ -48,10 +49,7 @@ Emitter.prototype.maxbacklog  = 1000;
 Emitter.prototype.shouldUnref = true;
 
 Object.defineProperty(Emitter.prototype, 'backlog', {
-	get: function()
-	{
-		return this.input.backlog;
-	}
+	get: function get() { return this.input.backlog; }
 });
 
 Emitter.setGlobalEmitter = function setGlobalEmitter(emitter)
@@ -64,40 +62,46 @@ Emitter.getGlobalEmitter = function getGlobalEmitter()
 	return globalEmitter;
 };
 
-Emitter.parseURI = function(options)
+Emitter.prototype.createClient = function createClient()
 {
-	var parsed = url.parse(options.uri);
+	const parsed = url.parse(this.options.uri);
 
 	switch (parsed.protocol)
 	{
 	case 'udp:':
-		options.udp = true;
-		options.host = parsed.hostname;
-		options.port = parsed.port;
+		this.options.host = parsed.hostname;
+		this.options.port = parsed.port;
+		this.client = new UDPStream(this.options);
 		break;
 
 	case 'sock:':
 	case 'socket:':
-		options.path = parsed.pathname;
+		this.options.path = parsed.pathname;
+		this.client = net.connect(this.options);
 		break;
 
 	case 'ws:':
 	case 'wss:':
-		options.ws = true;
-		options.url = parsed;
+		this.options.ws = true;
+		this.options.url = parsed;
+		this.client = new WSStream(this.options);
 		break;
 
 	case 'tcp:':
-		options.host = parsed.hostname;
-		options.port = parsed.port;
+		this.options.host = parsed.hostname;
+		this.options.port = parsed.port;
+		this.client = net.connect(this.options);
+		break;
+
+	case 'nsq:':
+	case 'nsqd:':
+		this.options.parsed = parsed;
+		this.client = new NSQStream(this.options);
 		break;
 
 	default:
-		throw (new Error('unsupported destination uri: ' + options.uri));
+		throw (new Error('unsupported destination uri: ' + this.options.uri));
 	}
-
-	delete options.uri;
-	return options;
 };
 
 Emitter.prototype.connect = function connect()
@@ -112,12 +116,7 @@ Emitter.prototype.connect = function connect()
 		this.client = null;
 	}
 
-	if (this.options.udp)
-		this.client = new UDPStream(this.options);
-	else if (this.options.ws)
-		this.client = new WSStream(this.options);
-	else
-		this.client = net.connect(this.options);
+	this.createClient();
 
 	this.output.pipe(this.client);
 	this.client.on('connect', this.onConnect.bind(this));
