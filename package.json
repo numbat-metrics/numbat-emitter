@@ -11,7 +11,7 @@
     "lodash": "~4.17.4",
     "readable-stream": "~2.2.9",
     "request": "~2.81.0",
-    "ws": "~2.2.3"
+    "ws": "~2.3.0"
   },
   "devDependencies": {
     "coveralls": "~2.13.0",
