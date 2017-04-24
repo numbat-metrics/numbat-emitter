@@ -17,7 +17,7 @@
     "coveralls": "~2.13.0",
     "eslint-config-ceejbot": "~1.0.4",
     "json-stream": "1.*",
-    "mocha": "~3.2.0",
+    "mocha": "~3.3.0",
     "must": "~0.13.4",
     "nyc": "~10.2.0",
     "xo": "~0.18.1"
