@@ -19,7 +19,7 @@
     "json-stream": "1.*",
     "mocha": "~3.2.0",
     "must": "~0.13.4",
-    "nyc": "~10.2.0",
+    "nyc": "~10.3.2",
     "xo": "~0.18.1"
   },
   "homepage": "https://github.com/numbat-metrics/numbat-emitter",
