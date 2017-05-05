@@ -1,5 +1,7 @@
 # numbat-emitter
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/numbat-metrics/numbat-emitter.svg)](https://greenkeeper.io/)
+
 [Numbat](http://www.arkive.org/numbat/myrmecobius-fasciatus/)-powered metrics emitter. See [numbat-collector](https://github.com/numbat-metrics/numbat-collector) for the matching metrics collector.
 
 [![on npm](http://img.shields.io/npm/v/numbat-emitter.svg?style=flat)](https://www.npmjs.org/package/numbat-emitter)  [![Tests](http://img.shields.io/travis/numbat-metrics/numbat-emitter.svg?style=flat)](http://travis-ci.org/numbat-metrics/numbat-emitter) [![Coverage Status](https://coveralls.io/repos/github/numbat-metrics/numbat-emitter/badge.svg?branch=master)](https://coveralls.io/github/numbat-metrics/numbat-emitter?branch=master) [![Dependencies](http://img.shields.io/david/numbat-metrics/numbat-emitter.svg?style=flat)](https://david-dm.org/numbat-metrics/numbat-emitter)
