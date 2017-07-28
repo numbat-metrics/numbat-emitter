@@ -174,8 +174,8 @@ Emitter.prototype.nextBackoff = function nextBackoff()
 
 Emitter.prototype.makeEvent = function makeEvent(attrs)
 {
-	assert(attrs && _.isObject(attrs), 'you cannot make an empty event');
-	assert(attrs.name, 'you must give your metric a name');
+	if (!attrs) return;
+	if (!attrs.name) return;
 
 	if (this.app && attrs.name.indexOf(this.app) !== 0)
 		attrs.name = this.app + '.' + attrs.name;
@@ -193,7 +193,8 @@ Emitter.prototype.metric = function metric(attrs)
 	attrs = typeof attrs === 'string' ?
 		{ name: attrs } : attrs;
 	var ev = this.makeEvent(attrs);
-	this.input.write(ev);
+
+	if (ev) this.input.write(ev);
 	return ev;
 };
 

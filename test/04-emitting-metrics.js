@@ -60,20 +60,18 @@ describe('metric()', function()
 
 	describe('via metric()', function()
 	{
-		it('requires that an object be passed to metric()', function(done)
+		it('makeEvent() returns nothing for an empty metric', function()
 		{
-			var emitter = new Emitter(mockOpts);
-			function shouldThrow() { emitter.metric(); }
-			shouldThrow.must.throw(/empty event/);
-			done();
+			const emitter = new Emitter(mockOpts);
+			const m = emitter.makeEvent();
+			demand(m).be.undefined();
 		});
 
-		it('requires a `name` field for all metrics', function(done)
+		it('requires a `name` field for all metrics', function()
 		{
-			var emitter = new Emitter(mockOpts);
-			function shouldThrow() { emitter.metric({ foo: 'bar' }); }
-			shouldThrow.must.throw(/name/);
-			done();
+			const emitter = new Emitter(mockOpts);
+			const m = emitter.makeEvent({ foo: 'bar' });
+			demand(m).be.undefined();
 		});
 
 		it('supplies a value of 1 if one is not provided', function(done)
