@@ -1,7 +1,7 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach: true, afterEach:true */
 'use strict';
 
-var
+const
 	demand     = require('must'),
 	stream     = require('readable-stream'),
 	dgram      = require('dgram'),
@@ -12,25 +12,25 @@ var
 
 describe('metric()', function()
 {
-	var mockOpts = {
+	const mockOpts = {
 		uri: 'tcp://localhost:4333',
 		app: 'testapp',
 		node: 'node-1'
 	};
 
-	var mockUDPOpts = {
+	const mockUDPOpts = {
 		uri: 'udp://localhost:4334',
 		app: 'testapp',
 	};
 
-	var mockServer, mockUDPServer;
+	let mockServer, mockUDPServer;
 
 	before(function(done)
 	{
-		var count = 0;
+		let count = 0;
 		function onConnection(socket)
 		{
-			var instream = new JSONStream();
+			const instream = new JSONStream();
 			socket.pipe(instream);
 			instream.on('data', function(data)
 			{
@@ -86,14 +86,14 @@ describe('metric()', function()
 			}
 
 			mockServer.on('received', observer);
-			var emitter = new Emitter(mockOpts);
+			const emitter = new Emitter(mockOpts);
 			emitter.metric({ name: 'test' });
 		});
 
 		it('returns the metric it makes for your curiosity', function()
 		{
-			var emitter = new Emitter(mockUDPOpts);
-			var obj = emitter.metric({ name: 'returnme' });
+			const emitter = new Emitter(mockUDPOpts);
+			const obj = emitter.metric({ name: 'returnme' });
 			obj.must.be.an.object();
 			obj.name.must.equal('testapp.returnme');
 			obj.must.have.property('host');
@@ -116,7 +116,7 @@ describe('metric()', function()
 			}
 
 			mockServer.on('received', observer);
-			var emitter = new Emitter(mockOpts);
+			const emitter = new Emitter(mockOpts);
 			emitter.metric({ name: 'test', value: 4 });
 		});
 
@@ -132,7 +132,7 @@ describe('metric()', function()
 			}
 
 			mockServer.on('received', observer);
-			var emitter = new Emitter(mockOpts);
+			const emitter = new Emitter(mockOpts);
 			emitter.metric({ name: 'test', value: 4, time: new Date('2014-01-01') });
 		});
 
@@ -140,13 +140,13 @@ describe('metric()', function()
 		{
 			this.timeout(5000);
 
-			var emitter = new Emitter(mockOpts);
+			const emitter = new Emitter(mockOpts);
 			emitter.on('close', function()
 			{
 				emitter.metric({ name: 'test.splort', value: 4 });
 				emitter.metric({ name: 'test.latency', value: 30 });
-				var ws = new stream.Writable();
-				var acc = [];
+				const ws = new stream.Writable();
+				const acc = [];
 				ws._write = function(chunk, enc, cb)
 				{
 					acc.push(chunk);
@@ -154,7 +154,7 @@ describe('metric()', function()
 				};
 				ws.once('finish', function()
 				{
-					var items = Buffer.concat(acc)
+					const items = Buffer.concat(acc)
 						.toString('utf8')
 						.split('\n')
 						.slice(0, -1)
@@ -178,11 +178,11 @@ describe('metric()', function()
 	{
 		it('calls metric() on global emitter', function(done)
 		{
-			var emitter = new Emitter(mockUDPOpts);
+			const emitter = new Emitter(mockUDPOpts);
 			Emitter.setGlobalEmitter(emitter);
 
-			var expect = {name: 'example'};
-			var seen = null;
+			const expect = {name: 'example'};
+			let seen = null;
 			emitter.metric = function(xs)
 			{
 				seen = xs;
@@ -195,8 +195,8 @@ describe('metric()', function()
 		it('skips destroyed emitters', function(done)
 		{
 
-			var expect = {name: 'example'};
-			var emitter = new Emitter(mockUDPOpts);
+			const expect = {name: 'example'};
+			const emitter = new Emitter(mockUDPOpts);
 			Emitter.setGlobalEmitter(emitter);
 
 			emitter.metric = function()
@@ -210,9 +210,9 @@ describe('metric()', function()
 
 		it('skips closed emitters', function(done)
 		{
-			var emitter = new Emitter(mockOpts);
+			const emitter = new Emitter(mockOpts);
 			emitter.maxretries = 0;
-			var expect = {name: 'example'};
+			const expect = {name: 'example'};
 			Emitter.setGlobalEmitter(emitter);
 			emitter.metric = function()
 			{

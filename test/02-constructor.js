@@ -1,7 +1,7 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach: true, afterEach:true */
 'use strict';
 
-var
+const
 	demand  = require('must'),
 	os      = require('os'),
 	Emitter = require('../index')
@@ -9,13 +9,13 @@ var
 
 describe('constructor', function(done)
 {
-	var mockOpts = {
+	const mockOpts = {
 		uri: 'tcp://localhost:4333',
 		app: 'testapp',
 		node: 'node-1'
 	};
 
-	var mockUDPOpts = {
+	const mockUDPOpts = {
 		uri: 'udp://localhost:4334',
 		app: 'testapp',
 	};
@@ -36,7 +36,7 @@ describe('constructor', function(done)
 
 	it('can be constructed', function(done)
 	{
-		var emitter = new Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 		emitter.must.be.an.object();
 
 		emitter.must.have.property('options');
@@ -56,21 +56,21 @@ describe('constructor', function(done)
 
 	it('calls parseURI() when given a uri option', function()
 	{
-		var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
 		e.must.have.property('options');
 		e.options.must.have.property('path');
 	});
 
 	it('defaults `app` to `numbat`', function()
 	{
-		var e = new Emitter({ uri: 'sock:/tmp/foobar.sock' });
+		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock' });
 		e.must.have.property('app');
 		e.app.must.equal('numbat');
 	});
 
 	it('adds the host name to its default fields', function()
 	{
-		var e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
 		e.defaults.must.have.property('host');
 		e.defaults.host.must.equal(os.hostname());
 	});
@@ -82,9 +82,9 @@ describe('constructor', function(done)
 		Emitter.must.have.property('getGlobalEmitter');
 		Emitter.getGlobalEmitter.must.be.a.function();
 
-		var first = Emitter.getGlobalEmitter();
+		const first = Emitter.getGlobalEmitter();
 		demand(first).be.falsy();
-		var emitter = new Emitter(mockUDPOpts);
+		const emitter = new Emitter(mockUDPOpts);
 		Emitter.setGlobalEmitter(emitter);
 		Emitter.getGlobalEmitter().must.equal(emitter);
 		Emitter.setGlobalEmitter();
