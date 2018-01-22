@@ -1,7 +1,7 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach: true, afterEach:true */
 'use strict';
 
-var
+const
 	demand     = require('must'),
 	dgram      = require('dgram'),
 	net        = require('net'),
@@ -11,20 +11,20 @@ var
 
 describe('connections', function()
 {
-	var mockOpts = {
+	const mockOpts = {
 		uri: 'tcp://localhost:4333',
 		app: 'testapp',
 		node: 'node-1'
 	};
 
-	var mockServer, mockUDPServer;
+	let mockServer, mockUDPServer;
 
 	before(function(done)
 	{
-		var count = 0;
+		let count = 0;
 		function onConnection(socket)
 		{
-			var instream = new JSONStream();
+			const instream = new JSONStream();
 			socket.pipe(instream);
 			instream.on('data', function(data)
 			{
@@ -54,7 +54,7 @@ describe('connections', function()
 
 	it('calls connect() when constructed', function(done)
 	{
-		var emitter = Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 		emitter.must.have.property('client');
 		emitter.client.on('connect', function()
 		{
@@ -65,7 +65,7 @@ describe('connections', function()
 
 	it('allows connect() to be called twice safely', function(done)
 	{
-		var emitter = new Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 		emitter.client.on('connect', function()
 		{
 			emitter.connect();
@@ -76,7 +76,7 @@ describe('connections', function()
 
 	it('allows destroy() to be called twice safely', function(done)
 	{
-		var emitter = new Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 		emitter.client.on('connect', function()
 		{
 			emitter.destroy();
@@ -87,8 +87,8 @@ describe('connections', function()
 
 	it('adds listeners for `connect`, `error`, and `close`', function(done)
 	{
-		var emitter = new Emitter(mockOpts);
-		var listeners = emitter.client.listeners('connect');
+		const emitter = new Emitter(mockOpts);
+		let listeners = emitter.client.listeners('connect');
 		listeners.must.be.an.array();
 		listeners.length.must.be.above(0);
 
@@ -107,8 +107,8 @@ describe('connections', function()
 
 	it('reconnects on close', function(done)
 	{
-		var count = 0;
-		var emitter = new Emitter(mockOpts);
+		let count = 0;
+		const emitter = new Emitter(mockOpts);
 		emitter.on('ready', function()
 		{
 			count++;

@@ -1,7 +1,7 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach: true, afterEach:true */
 'use strict';
 
-var
+const
 	demand     = require('must'),
 	dgram      = require('dgram'),
 	Emitter    = require('../index')
@@ -14,7 +14,7 @@ describe('udp output', function()
 		app: 'testapp',
 	};
 
-	var mockUDPServer;
+	let mockUDPServer;
 
 	before(function(done)
 	{
@@ -29,7 +29,7 @@ describe('udp output', function()
 
 	it('can construct a UDP emitter', function(done)
 	{
-		var emitter = new Emitter(mockUDPOpts);
+		const emitter = new Emitter(mockUDPOpts);
 		emitter.on('ready', function()
 		{
 			emitter.client.constructor.name.must.equal('UDPStream');
@@ -51,7 +51,7 @@ describe('udp output', function()
 		}
 
 		mockUDPServer.on('received', observer);
-		var emitter = new Emitter(mockUDPOpts);
+		const emitter = new Emitter(mockUDPOpts);
 		emitter.connect();
 		emitter.metric({ name: 'test', value: 4 });
 	});

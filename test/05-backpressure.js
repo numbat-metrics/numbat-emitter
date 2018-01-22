@@ -1,7 +1,7 @@
 /*global describe:true, it:true, before:true, after:true, beforeEach: true, afterEach:true */
 'use strict';
 
-var
+const
 	demand     = require('must'),
 	net        = require('net'),
 	Emitter    = require('../index'),
@@ -10,19 +10,19 @@ var
 
 describe('backpressure', function()
 {
-	var mockOpts = {
+	const mockOpts = {
 		uri: 'tcp://localhost:4335',
 		app: 'testapp',
 		node: 'node-1',
 	};
 
-	var mockServer;
+	let mockServer;
 
 	before(function(done)
 	{
 		function onConnection(socket)
 		{
-			var instream = new JSONStream();
+			const instream = new JSONStream();
 			socket.pipe(instream);
 			instream.on('data', function(data)
 			{
@@ -36,7 +36,7 @@ describe('backpressure', function()
 
 	it('sends its backlog when connected', function(done)
 	{
-		var count = 0;
+		let count = 0;
 		function observer(d)
 		{
 			count++;
@@ -53,7 +53,7 @@ describe('backpressure', function()
 		}
 		mockServer.on('received', observer);
 
-		var emitter = new Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 
 		function fillBacklog()
 		{
@@ -63,21 +63,21 @@ describe('backpressure', function()
 		}
 
 		emitter.on('close', fillBacklog);
-		var orig = emitter.connect.bind(emitter);
+		const orig = emitter.connect.bind(emitter);
 		emitter.connect = function() { setTimeout(orig, 300); };
 		emitter.client.end();
 	});
 
 	it('sends normally when connected', function(done)
 	{
-		var emitter = new Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 		emitter.on('ready', function()
 		{
 			emitter.metric({ name: 'testapp.splort', value: 4 });
 			emitter.metric({ name: 'testapp.latency', value: 30 });
 		});
 
-		var count = 0;
+		let count = 0;
 		function observer(d)
 		{
 			count++;
@@ -101,7 +101,7 @@ describe('backpressure', function()
 
 	it('destroy can be safely called before connect', function(done)
 	{
-		var emitter = new Emitter(mockOpts);
+		const emitter = new Emitter(mockOpts);
 		emitter.destroy();
 		done();
 	});
