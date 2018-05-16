@@ -2,9 +2,12 @@
 'use strict';
 
 const
-	demand  = require('must'),
-	os      = require('os'),
-	Emitter = require('../index')
+	demand     = require('must'),
+	dgram      = require('dgram'),
+	net        = require('net'),
+	os         = require('os'),
+	Emitter    = require('../index'),
+	JSONStream = require('json-stream')
 	;
 
 describe('constructor', function(done)
@@ -19,6 +22,53 @@ describe('constructor', function(done)
 		uri: 'udp://localhost:4334',
 		app: 'testapp',
 	};
+
+	const mockSockOpts = {
+		uri: 'sock:/tmp/foobar.sock',
+		app: 'testapp'
+	};
+
+	let mockServer, mockUDPServer, mockSockServer;
+
+	before(function(done)
+	{
+		let count = 0;
+		function onConnection(socket)
+		{
+			const instream = new JSONStream();
+			socket.pipe(instream);
+			instream.on('data', function(data)
+			{
+				mockServer.emit('received', data);
+			});
+		}
+
+		mockServer = net.createServer(onConnection);
+		mockServer.listen(4333, function()
+		{
+			count++;
+			if (count === 2) done();
+		});
+
+		mockUDPServer = dgram.createSocket('udp4');
+		mockUDPServer.on('listening', function()
+		{
+			count++;
+			if (count === 2) done();
+		});
+		mockUDPServer.on('message', function(msg, rinfo)
+		{
+			mockUDPServer.emit('received', JSON.parse(msg));
+		});
+		mockUDPServer.bind(4334);
+
+		mockSockServer = net.createServer(onConnection);
+		mockSockServer.listen('/tmp/foobar.sock', function()
+		{
+			count++;
+			if (count === 2) done();
+		});
+	});
 
 	it('requires an options object', function(done)
 	{
@@ -56,23 +106,26 @@ describe('constructor', function(done)
 
 	it('calls parseURI() when given a uri option', function()
 	{
-		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+		const e = new Emitter(mockSockOpts);
 		e.must.have.property('options');
 		e.options.must.have.property('path');
+		e.destroy();
 	});
 
 	it('defaults `app` to `numbat`', function()
 	{
-		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock' });
+		const e = new Emitter({ uri: mockSockOpts.uri });
 		e.must.have.property('app');
 		e.app.must.equal('numbat');
+		e.destroy();
 	});
 
 	it('adds the host name to its default fields', function()
 	{
-		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+		const e = new Emitter(mockSockOpts);
 		e.defaults.must.have.property('host');
 		e.defaults.host.must.equal(os.hostname());
+		e.destroy();
 	});
 
 	it('has some global emitter functions and stuff', function()
@@ -87,6 +140,15 @@ describe('constructor', function(done)
 		const emitter = new Emitter(mockUDPOpts);
 		Emitter.setGlobalEmitter(emitter);
 		Emitter.getGlobalEmitter().must.equal(emitter);
+		emitter.destroy();
 		Emitter.setGlobalEmitter();
+	});
+
+	after(function(done)
+	{
+		mockUDPServer.close();
+		mockServer.close();
+		mockSockServer.close();
+		done();
 	});
 });
