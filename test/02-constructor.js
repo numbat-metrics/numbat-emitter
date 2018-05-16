@@ -106,7 +106,7 @@ describe('constructor', function(done)
 
 	it('calls parseURI() when given a uri option', function()
 	{
-		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+		const e = new Emitter(mockSockOpts);
 		e.must.have.property('options');
 		e.options.must.have.property('path');
 		e.destroy();
@@ -114,7 +114,7 @@ describe('constructor', function(done)
 
 	it('defaults `app` to `numbat`', function()
 	{
-		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock' });
+		const e = new Emitter({ uri: mockSockOpts.uri });
 		e.must.have.property('app');
 		e.app.must.equal('numbat');
 		e.destroy();
@@ -122,7 +122,7 @@ describe('constructor', function(done)
 
 	it('adds the host name to its default fields', function()
 	{
-		const e = new Emitter({ uri: 'sock:/tmp/foobar.sock', app: 'test' });
+		const e = new Emitter(mockSockOpts);
 		e.defaults.must.have.property('host');
 		e.defaults.host.must.equal(os.hostname());
 		e.destroy();
