@@ -11,6 +11,7 @@ const os = require('os');
 const UDPStream = require('./lib/udp-stream');
 const url = require('url');
 const WSStream = require('./lib/ws-stream');
+const toStatsd = require('./to-statsd');
 
 let globalEmitter = false;
 
@@ -100,6 +101,13 @@ module.exports = class Emitter extends events.EventEmitter
 			this.client = new NSQStream(this.options);
 			break;
 
+		case 'statsd:':
+			this.options.host = parsed.hostname;
+			this.options.port = parsed.port;
+			this.options.statsd = true;
+			this.client = new UDPStream(this.options);
+			break;
+
 		default:
 			throw (new Error('unsupported destination uri: ' + this.options.uri));
 		}
@@ -184,8 +192,13 @@ module.exports = class Emitter extends events.EventEmitter
 		const event = {};
 		_.defaults(event, attrs, this.defaults);
 		if (!event.time) event.time = Date.now(); // milliseconds!
-		if (!event.hasOwnProperty('value')) event.value = 1;
 
+		if (this.options.statsd)
+		{
+			return toStatsd(event);
+		}
+
+		if (!event.hasOwnProperty('value')) event.value = 1;
 		return event;
 	}
 
