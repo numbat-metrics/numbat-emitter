@@ -33,6 +33,7 @@ module.exports = class Emitter extends events.EventEmitter
 		this.maxretries = 100;
 		this.maxbacklog = 1000;
 		this.shouldUnref = true;
+		this._parsed = url.parse(opts.uri);
 
 		Object.defineProperty(this, 'backlog', {
 			get: function get() { return this.input.backlog; }
@@ -48,7 +49,14 @@ module.exports = class Emitter extends events.EventEmitter
 		if (opts.node) this.defaults.node = opts.node;
 		this.app = opts.app || 'numbat';
 		this.input = discard({objectMode: true, maxBacklog: opts.maxbacklog});
-		this.output = new JSONStringifyStream({ highWaterMark: opts.maxbacklog });
+		if (this._parsed.protocol === 'statsd:')
+		{
+			this.output = new Passthrough({ highWaterMark: opts.maxbacklog });
+		}
+		else
+		{
+			this.output = new JSONStringifyStream({ highWaterMark: opts.maxbacklog });
+		}
 		this.input.pipe(this.output);
 		this.connect();
 	}
@@ -67,8 +75,7 @@ module.exports = class Emitter extends events.EventEmitter
 
 	createClient()
 	{
-		const parsed = url.parse(this.options.uri);
-
+		const parsed = this._parsed;
 		switch (parsed.protocol)
 		{
 		case 'udp:':
@@ -106,12 +113,6 @@ module.exports = class Emitter extends events.EventEmitter
 			this.options.host = parsed.hostname;
 			this.options.port = parsed.port;
 			this.options.statsd = true;
-			this.output.unpipe();
-			this.output.destroy();
-			this.output = new Passthrough({
-				highWaterMark: this.options.maxbacklog
-			});
-			this.input.pipe(this.output);
 			this.client = new UDPStream(this.options);
 			break;
 
