@@ -4,6 +4,7 @@ const _ = require('lodash');
 const assert = require('assert');
 const discard = require('discard-stream');
 const events = require('events');
+const Passthrough = require('readable-stream/passthrough')
 const JSONStringifyStream = require('./lib/json-stringify-stream');
 const net = require('net');
 const NSQStream = require('./lib/nsq-stream');
@@ -105,6 +106,12 @@ module.exports = class Emitter extends events.EventEmitter
 			this.options.host = parsed.hostname;
 			this.options.port = parsed.port;
 			this.options.statsd = true;
+			this.output.unpipe();
+			this.output.destroy();
+			this.output = new Passthrough({
+				highWaterMark: this.options.maxbacklog
+			});
+			this.input.pipe(this.output);
 			this.client = new UDPStream(this.options);
 			break;
 

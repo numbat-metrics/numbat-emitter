@@ -69,7 +69,7 @@ describe('metric()', function()
 		mockStatsdServer.on('listening', done);
 		mockStatsdServer.on('message', function(msg, rinfo)
 		{
-			mockStatsdServer.emit('received', JSON.parse(msg));
+			mockStatsdServer.emit('received', msg);
 		});
 		mockStatsdServer.bind(4335);
 	});
