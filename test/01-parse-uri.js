@@ -53,6 +53,17 @@ describe('createClient()', function()
 		done();
 	});
 
+	it('parses the statsd uri option', function(done)
+	{
+		const opts = { uri: 'statsd://localhost:8125', app: 'foo'};
+		const e = new Emitter(opts);
+		e.options.host.must.equal('localhost');
+		e.options.port.must.equal('8125');
+		e.options.statsd.must.equal(true);
+		e.options.must.not.have.property('udp');
+		done();
+	});
+
 	it('throws when given an unsupported uri', function()
 	{
 		function shouldThrow()

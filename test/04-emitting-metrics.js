@@ -23,7 +23,12 @@ describe('metric()', function()
 		app: 'testapp',
 	};
 
-	let mockServer, mockUDPServer;
+	const mockStatsdOpts = {
+		uri: 'statsd://localhost:4335',
+		app: 'statsdapp',
+	};
+
+	let mockServer, mockUDPServer, mockStatsdServer;
 
 	before(function(done)
 	{
@@ -58,6 +63,17 @@ describe('metric()', function()
 		mockUDPServer.bind(4334);
 	});
 
+	before(function(done)
+	{
+		mockStatsdServer = dgram.createSocket('udp4');
+		mockStatsdServer.on('listening', done);
+		mockStatsdServer.on('message', function(msg, rinfo)
+		{
+			mockStatsdServer.emit('received', JSON.parse(msg));
+		});
+		mockStatsdServer.bind(4335);
+	});
+
 	describe('via metric()', function()
 	{
 		it('makeEvent() returns nothing for an empty metric', function()
@@ -88,6 +104,32 @@ describe('metric()', function()
 			mockServer.on('received', observer);
 			const emitter = new Emitter(mockOpts);
 			emitter.metric({ name: 'test' });
+		});
+
+		it('can emit statsd counts', function(done)
+		{
+			function observer(d)
+			{
+				d.must.startWith('statsdapp.test:1|c');
+				done();
+			}
+
+			mockStatsdServer.once('received', observer);
+			const emitter = new Emitter(mockStatsdOpts);
+			emitter.metric({ name: 'test' });
+		});
+
+		it('can emit statsd gauges', function(done)
+		{
+			function observer(d)
+			{
+				d.must.startWith('statsdapp.test-gauge:42|g');
+				done();
+			}
+
+			mockStatsdServer.once('received', observer);
+			const emitter = new Emitter(mockStatsdOpts);
+			emitter.metric({ name: 'test-gauge', value: 42 });
 		});
 
 		it('returns the metric it makes for your curiosity', function()
@@ -235,6 +277,7 @@ describe('metric()', function()
 	{
 		mockServer.close();
 		mockUDPServer.close();
+		mockStatsdServer.close();
 		done();
 	});
 });
