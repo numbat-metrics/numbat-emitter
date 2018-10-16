@@ -11,7 +11,7 @@
     "lodash": "^4.17.10",
     "readable-stream": "^2.3.6",
     "request": "^2.86.0",
-    "squeaky": "^1.4.2",
+    "squeaky": "^2.4.2",
     "ws": "^5.1.1"
   },
   "devDependencies": {
