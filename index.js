@@ -186,7 +186,7 @@ module.exports = class Emitter extends events.EventEmitter
 
 	nextBackoff()
 	{
-		return Math.min((Math.random() + 1) * 10 * Math.pow(2, this.retries), 60000);
+		return Math.min((Math.random() + 1) * 10 * (2 ** this.retries), 60000);
 	}
 
 	makeEvent(attrs)

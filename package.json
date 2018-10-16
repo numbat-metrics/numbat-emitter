@@ -10,18 +10,18 @@
     "discard-stream": "^1.0.1",
     "lodash": "^4.17.10",
     "readable-stream": "^2.3.6",
-    "request": "^2.86.0",
-    "squeaky": "^1.4.2",
+    "request": "^2.88.0",
+    "squeaky": "^2.4.2",
     "ws": "^5.1.1"
   },
   "devDependencies": {
     "coveralls": "^3.0.1",
     "eslint-config-ceejbot": "^1.1.1",
     "json-stream": "1.*",
-    "mocha": "^5.1.1",
+    "mocha": "^5.2.0",
     "must": "~0.13.4",
-    "nyc": "^11.8.0",
-    "xo": "^0.21.0"
+    "nyc": "^13.1.0",
+    "xo": "^0.23.0"
   },
   "homepage": "https://github.com/numbat-metrics/numbat-emitter",
   "keywords": [
