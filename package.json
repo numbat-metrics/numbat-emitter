@@ -1,7 +1,7 @@
 {
   "name": "numbat-emitter",
   "description": "numbat-powered metrics emitter",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "author": "C J Silverio <ceejceej@gmail.com>",
   "bugs": {
     "url": "https://github.com/numbat-metrics/numbat-emitter/issues"
