@@ -8,7 +8,7 @@ module.exports = function messageToStatsd(message)
 	{
 		if (key.match(/(time|value|name|timing|set|count|rate)/)) return '';
 		const val = message[key];
-		if (!val || val instanceof Object) return ''; // only want strings, nums, or bools
+		if (!['string', 'number', 'boolean'].includes(typeof val)) return ''; // only want strings, nums, or bools
 		return `${sanitizeTag(key)}:${val}`;
 	}).filter(Boolean);
 	const tagStr = tags.join(',');
