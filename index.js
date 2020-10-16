@@ -48,14 +48,14 @@ module.exports = class Emitter extends events.EventEmitter
 		this.defaults = { host: os.hostname() };
 		if (opts.node) this.defaults.node = opts.node;
 		this.app = opts.app || 'numbat';
-		this.input = discard({objectMode: true, maxBacklog: opts.maxbacklog});
+		this.input = discard({objectMode: true, maxBacklog: this.maxbacklog});
 		if (this._parsed.protocol === 'statsd:')
 		{
-			this.output = new Passthrough({ highWaterMark: opts.maxbacklog });
+			this.output = new Passthrough({ highWaterMark: this.maxbacklog });
 		}
 		else
 		{
-			this.output = new JSONStringifyStream({ highWaterMark: opts.maxbacklog });
+			this.output = new JSONStringifyStream({ highWaterMark: this.maxbacklog });
 		}
 		this.input.pipe(this.output);
 		this.connect();
